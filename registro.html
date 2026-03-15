@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetCloud - Registro</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet" />
+    <link href="./css/main.css" rel="stylesheet" />
+    <link href="./css/registro.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="v21_2">
+        <div class="v21_3">
+            <!-- Panel izquierdo - Branding (igual que login) -->
+            <div class="v21_4">
+                <div class="v21_5">
+                    <div class="v21_6"></div>
+                </div>
+                <div class="v21_7">
+                    <div class="v21_8">
+                        <div class="v21_9">
+                            <div class="v21_10"></div>
+                        </div>
+                        <div class="v21_11">
+                            <span class="v21_12">VetCloud</span>
+                        </div>
+                    </div>
+                    <div class="v21_13">
+                        <div class="v21_14">
+                            <span class="v21_15">Cuídalos, <br>Gestiónalos con nosotros.</span>
+                        </div>
+                        <div class="v21_16">
+                            <span class="v21_17">La plataforma de gestión integral para clínicas veterinarias y
+                                servicios profesionales de peluquería canina.</span>
+                        </div>
+                    </div>
+                    <div class="v21_18">
+                        <div class="v21_19"></div>
+                        <div class="v21_20"></div>
+                        <div class="v21_21"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel derecho - Formulario de Registro -->
+            <div class="v21_22">
+                <div class="reg-form-container">
+                    <div class="v21_24">
+                        <div class="v21_25"><span class="v21_26">Crear una cuenta</span></div>
+                        <div class="v21_27"><span class="v21_28">Ingrese sus datos para registrarse en VetCloud.</span></div>
+                    </div>
+                    <form action="validacion_registro.php" method="post">
+                        <div class="reg-fields-container">
+                            <!-- Nombre de Usuario -->
+                            <div class="reg-field">
+                                <div class="reg-label"><span class="v21_33">Nombre de Usuario</span></div>
+                                <div class="reg-input-wrapper">
+                                    <div class="reg-input-box">
+                                        <input type="text" name="username" class="reg-input" placeholder="usuario123" required>
+                                    </div>
+                                    <div class="reg-icon">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                            <path d="M8 8C10.21 8 12 6.21 12 4C12 1.79 10.21 0 8 0C5.79 0 4 1.79 4 4C4 6.21 5.79 8 8 8Z" fill="rgba(148,163,184,1)"/>
+                                            <path d="M8 10C4.69 10 0 11.34 0 14V16H16V14C16 11.34 11.31 10 8 10Z" fill="rgba(148,163,184,1)"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Correo Electrónico -->
+                            <div class="reg-field">
+                                <div class="reg-label"><span class="v21_33">Dirección de Correo Electrónico</span></div>
+                                <div class="reg-input-wrapper">
+                                    <div class="reg-input-box">
+                                        <input type="email" name="email" class="reg-input" placeholder="vet@example.com" required>
+                                    </div>
+                                    <div class="reg-icon">
+                                        <div class="v21_39" style="width:16px;height:13px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contraseña -->
+                            <div class="reg-field">
+                                <div class="reg-label"><span class="v21_33">Contraseña</span></div>
+                                <div class="reg-input-wrapper">
+                                    <div class="reg-input-box">
+                                        <input type="password" name="password" class="reg-input" placeholder="••••••••" required>
+                                    </div>
+                                    <div class="reg-icon">
+                                        <div class="v21_48" style="width:13px;height:17px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <!-- Términos y condiciones -->
+                            <div class="reg-terms">
+                                <div class="v21_54" style="position:relative;"></div>
+                                <span class="reg-terms-text">Acepto los <a href="#" class="reg-link">Términos de servicio</a> y la <a href="#" class="reg-link">Política de privacidad</a></span>
+                            </div>
+
+                            <!-- Botón de registro -->
+                            <div class="reg-submit">
+                                <button class="v21_60" type="submit" style="position:relative;cursor:pointer;border:none;">
+                                    <div class="v21_61"></div>
+                                    <span class="v21_62" style="left:50%;transform:translateX(-50%);">Registrarse</span>
+                                </button>
+                            </div>
+
+                            <!-- Separador -->
+                            <div class="v21_63" style="position:relative;">
+                                <div class="v21_64"></div>
+                                <div class="v21_65"><span class="v21_66">o continuar con</span></div>
+                                <div class="v21_67"></div>
+                            </div>
+
+                            <!-- Botones sociales -->
+                            <div class="reg-social">
+                                <div class="v21_69" style="position:relative;">
+                                    <div class="v21_70" style="position:absolute;">
+                                        <div class="v21_71"></div>
+                                        <div class="v21_72"></div>
+                                        <div class="v21_73"></div>
+                                        <div class="v21_74"></div>
+                                    </div>
+                                    <span class="v21_75" style="position:absolute;">Google</span>
+                                </div>
+                                <div class="v21_76" style="position:relative;">
+                                    <div class="v21_77" style="position:absolute;">
+                                        <div class="v21_78"></div>
+                                    </div>
+                                    <span class="v21_79" style="position:absolute;">Facebook</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="v21_80"><span class="v21_81">¿Ya tienes cuenta? <a href="login.html" class="reg-link-login">Inicia sesión.</a></span></div>
+            </div>
+
+            <!-- Footer -->
+            <div class="v21_82">
+                <div class="v21_83">
+                    <div class="v21_84"><span class="v21_85">política de privacidad</span></div>
+                    <div class="v21_86"><span class="v21_87">Términos de servicio</span></div>
+                    <div class="v21_88"><span class="v21_89">Apoyo</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

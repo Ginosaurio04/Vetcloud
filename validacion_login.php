@@ -1,0 +1,32 @@
+<?php
+session_start();
+require 'conex.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    $stmt = $conexion->prepare("SELECT id, username, password FROM usuarios WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    if ($datos = $resultado->fetch_assoc()) {
+        if (password_verify($password, $datos['password'])) {
+            $_SESSION['user_id'] = $datos['id'];
+            $_SESSION['username'] = $datos['username'];
+            header("Location: index.html");
+            exit();
+        }
+        else {
+            echo "Contraseña incorrecta";
+        }
+    }
+    else {
+        echo "Usuario no encontrado";
+    }
+    $stmt->close();
+    $conexion->close();
+
+}
