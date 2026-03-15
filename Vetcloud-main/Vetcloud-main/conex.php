@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "barca";
+$db = "veterinaria_unimar";
 
 $conexion = new mysqli($host, $user, $pass, $db);
 

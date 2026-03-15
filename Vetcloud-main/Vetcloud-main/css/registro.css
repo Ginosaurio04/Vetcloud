@@ -5,34 +5,23 @@
 
 /* Contenedor principal del formulario de registro */
 .reg-form-container {
-  width: 448px;
-  position: absolute;
-  top: 60px;
-  left: 96px;
-  padding: 32px 0px;
-}
-
-/* Fila para nombre y apellido lado a lado */
-.reg-row {
+  width: 100%;
+  max-width: 448px;
   display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.reg-field-half {
-  flex: 1;
-  position: relative;
+  flex-direction: column;
 }
 
 /* Campo completo (email, contraseña, etc.) */
 .reg-field {
-  position: relative;
   margin-bottom: 16px;
 }
 
 /* Label del campo */
 .reg-label {
   margin-bottom: 8px;
+}
+.reg-label .v21_33 {
+  position: static;
 }
 
 /* Contenedor del input con icono */
@@ -49,11 +38,9 @@
   background: rgba(255,255,255,1);
   padding: 16px 16px 16px 44px;
   border-radius: 12px;
-  overflow: hidden;
   border: 1px solid rgba(226,232,240,1);
   transition: border-color 0.2s ease;
 }
-
 .reg-input-box:focus-within {
   border-color: rgba(43,238,205,1);
 }
@@ -64,14 +51,11 @@
   border: none;
   background: transparent;
   color: rgba(15,23,42,1);
-  font-family: Inter;
+  font-family: 'Inter', sans-serif;
   font-weight: 400;
   font-size: 15px;
-  opacity: 1;
-  text-align: left;
   outline: none;
 }
-
 .reg-input::placeholder {
   color: rgba(148,163,184,1);
 }
@@ -89,8 +73,10 @@
 
 /* Contenedor de los campos del formulario */
 .reg-fields-container {
-  margin-top: 100px;
-  width: 448px;
+  margin-top: 32px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Términos y condiciones */
@@ -101,10 +87,9 @@
   margin-bottom: 20px;
   margin-top: 4px;
 }
-
 .reg-terms-text {
   color: rgba(71,85,105,1);
-  font-family: Inter;
+  font-family: 'Inter', sans-serif;
   font-weight: 500;
   font-size: 13px;
 }
@@ -115,49 +100,89 @@
   text-decoration: none;
   transition: opacity 0.2s ease;
 }
-
 .reg-link:hover {
   opacity: 0.8;
 }
 
 /* Botón de Registro */
 .reg-submit {
-  position: relative;
-  width: 448px;
-  height: 52px;
+  width: 100%;
   margin-bottom: 16px;
 }
 
-.reg-submit .v21_60 {
-  cursor: pointer;
-  border: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+/* Separator - override absolute positioning from main.css */
+.reg-fields-container .v21_63 {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  margin: 16px 0;
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+.reg-fields-container .v21_64,
+.reg-fields-container .v21_67 {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  flex: 1;
+}
+.reg-fields-container .v21_65 {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+}
+.reg-fields-container .v21_66 {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
 }
 
-.reg-submit .v21_60:hover {
-  transform: translateY(-1px);
-  box-shadow: 0px 6px 12px rgba(43, 238, 205, 0.35);
+/* Fix v21_80 "¿Ya tienes cuenta?" link */
+.v21_22 .v21_80 {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
+  margin-top: 24px;
+  text-align: center;
+}
+.v21_22 .v21_81 {
+  position: static !important;
+  top: auto !important;
+  left: auto !important;
 }
 
-.reg-submit .v21_60:active {
-  transform: translateY(0px);
-}
 
 /* Botones sociales en fila */
 .reg-social {
-  position: relative;
-  width: 448px;
-  height: 46px;
-  margin-top: 16px;
+  display: flex !important;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 16px;
 }
-
 .reg-social .v21_69,
 .reg-social .v21_76 {
-  position: absolute;
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  flex: 1;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px;
+  margin: 0 !important;
 }
-
-.reg-social .v21_76 {
-  left: 232px;
+.reg-social .v21_70,
+.reg-social .v21_77 {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+}
+.reg-social .v21_75,
+.reg-social .v21_79 {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
 }
 
 /* Link "Inicia sesión" */
@@ -167,38 +192,12 @@
   text-decoration: none;
   transition: opacity 0.2s ease;
 }
-
 .reg-link-login:hover {
   opacity: 0.8;
 }
 
-/* Separador "o continuar con" ajuste */
-.reg-fields-container .v21_63 {
-  width: 448px;
-  height: 32px;
-  margin-top: 16px;
-}
-
-.reg-fields-container .v21_64 {
-  position: absolute;
-  top: 15px;
-  left: 0px;
-}
-
-.reg-fields-container .v21_65 {
-  position: absolute;
-  top: 8px;
-  left: 144px;
-}
-
-.reg-fields-container .v21_67 {
-  position: absolute;
-  top: 15px;
-  left: 305px;
-}
-
-/* Ajuste del texto inferior "¿Ya tienes cuenta?" */
-.v21_22 .v21_80 {
-  top: auto;
-  bottom: 100px;
+/* Fix v21_80 in registration context */
+.reg-form-container + .v21_80,
+.reg-form-container .v21_80 {
+  position: static !important;
 }
