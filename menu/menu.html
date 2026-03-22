@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/main.css" /> <title>Panel Central - Huellitas</title>
+</head>
+<body>
+    <div id="sideMenu" class="sidebar-wrapper">
+    <div class="v2_278">
+        <div class="v2_279">
+            <div class="name"></div>
+            <div class="v2_280"></div>
+            <div class="v2_291">
+                <div class="v2_292"><div class="v2_296"><span class="v2_297">Panel de Control</span></div></div>
+                <div class="v2_298"><div class="v2_302"><span class="v2_303">Pacientes</span></div></div>
+                <div class="v2_304"><div class="v2_308"><span class="v2_309">Citas</span></div></div>
+                <div class="v2_310"><div class="v2_314"><span class="v2_315">Inventario</span></div></div>
+                <div class="v2_316"><div class="v2_320"><span class="v2_321">Facturación</span></div></div>
+            </div>
+            <div class="v2_322">
+                <div class="v2_327"><span class="v2_328">Nueva Cita</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<header class="main-header">
+    <div class="header-left">
+        <span class="logo-text">Panel Central</span>
+        <button class="btn-quick-action" onclick="toggleMenu()" title="Abrir Menú">
+            <span class="plus-icon">+</span>
+            <span class="btn-text">Nuevo</span>
+        </button>
+        <span class="header-date">Jueves, 26 de Octubre 2023</span>
+    </div>
+    </header>
+
+        <section class="metrics-section">
+            <div class="section-title">
+                <h2>Métricas del Día</h2>
+                <p>Monitoreo profesional en tiempo real • Huellitas</p>
+            </div>
+            <div class="metrics-grid">
+                <article class="metric-card">
+                    <span class="badge">+12% vs Ayer</span>
+                    <span class="label">Citas Hoy</span>
+                    <span class="value">24</span>
+                </article>
+                <article class="metric-card">
+                    <span class="badge warning">Crítico: 3</span>
+                    <span class="label">Alertas Inventario</span>
+                    <span class="value">5 Items</span>
+                </article>
+                <article class="metric-card">
+                    <span class="label">Nuevos Pacientes</span>
+                    <span class="value">8</span>
+                </article>
+                <article class="metric-card highlight">
+                    <span class="label">Facturación Diaria</span>
+                    <span class="value">$1,850.00</span>
+                </article>
+            </div>
+        </section>
+
+        <main class="ops-section">
+            <div class="ops-header">
+                <h3>Estado Operativo en Vivo</h3>
+                <span class="status-badge">ACTUALIZANDO</span>
+            </div>
+
+            <div class="ops-columns">
+                <div class="column">
+                    <div class="col-header">En Espera <span>4</span></div>
+                    <div class="patient-card">
+                        <div class="patient-info"><strong>Max</strong><span>Golden Retriever • 3a</span></div>
+                        <div class="visit-type">Consulta</div>
+                    </div>
+                    <div class="patient-card">
+                        <div class="patient-info"><strong>Luna</strong><span>Gato Siamés • 1a</span></div>
+                        <div class="visit-type">Vacunación</div>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="col-header">En Consulta <span>2</span></div>
+                    <div class="patient-card active">
+                        <div class="patient-info"><strong>Bella</strong><span>Siamés • 2a</span></div>
+                        <div class="time-badge">18 min</div>
+                        <button class="btn-finish">Finalizar</button>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <div class="col-header">En Peluquería <span>2</span></div>
+                    <div class="patient-card">
+                        <div class="patient-info"><strong>Coco</strong><span>Caniche Toy • 4a</span></div>
+                        <div class="visit-status">En proceso</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    function toggleMenu() {
+        const menu = document.getElementById('sideMenu');
+        menu.classList.toggle('active');
+        
+        // Cerrar el menú si haces clic fuera de él
+        document.addEventListener('click', function(event) {
+            const isClickInside = menu.contains(event.target) || 
+                                 event.target.closest('.btn-quick-action');
+            
+            if (!isClickInside) {
+                menu.classList.remove('active');
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
