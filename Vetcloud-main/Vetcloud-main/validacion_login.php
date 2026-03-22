@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $datos['password'])) {
             $_SESSION['user_id'] = $datos['id'];
             $_SESSION['username'] = $datos['username'];
-            header("Location: index.html");
+            header("Location: menu.html");
             exit();
         }
         else {
