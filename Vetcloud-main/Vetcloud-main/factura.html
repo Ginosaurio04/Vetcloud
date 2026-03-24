@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetCloud - Invoice Builder</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #eef2ff;
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* --- Navbar Superior --- */
+        nav {
+            height: 65px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-links li {
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .nav-links li:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .nav-links li.active {
+            color: var(--primary);
+            background: var(--primary-light);
+            font-weight: 600;
+        }
+
+        /* --- Layout de Columnas --- */
+        main {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 320px 1fr 320px;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        h3 {
+            margin: 0 0 15px 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* --- Listas y Items --- */
+        .visit-item {
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .visit-item:hover {
+            border-color: var(--primary);
+            background: #fafafa;
+        }
+
+        .visit-item.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .visit-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        /* --- Invoice Central --- */
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr 1fr;
+            font-weight: 600;
+            padding: 12px 0;
+            border-bottom: 2px solid var(--bg-body);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .line-item {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1fr 1fr;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .alert-box {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 25px;
+            display: flex;
+            gap: 12px;
+        }
+
+        /* --- Summary --- */
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .total-row {
+            font-weight: 800;
+            font-size: 1.3rem;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+            margin-top: 15px;
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #4338ca;
+        }
+
+        .badge-gold {
+            background: #fef9c3;
+            color: #854d0e;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-left">
+            <div class="logo">VetCloud</div>
+            <ul class="nav-links">
+                <li>Dashboard</li>
+                <li>Appointments</li>
+                <li>Patients</li>
+                <li class="active">Billing</li>
+                <li>Inventory</li>
+            </ul>
+        </div>
+        <div class="nav-right" style="display: flex; align-items: center; gap: 15px;">
+            <span class="material-symbols-outlined"
+                style="color: var(--text-muted); cursor: pointer;">notifications</span>
+            <div style="width: 35px; height: 35px; background: #ddd; border-radius: 50%;"></div>
+        </div>
+    </nav>
+
+    <main>
+        <aside>
+            <div class="card">
+                <h3>Visitas activas</h3>
+                <div class="visit-item selected">
+                    <div style="display:flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span class="visit-tag" style="background:#dcfce7; color:#166534;">Médico</span>
+                        <small style="color:var(--text-muted)">10:30 AM</small>
+                    </div>
+                    <strong>Buddy</strong><br>
+                    <small style="color:var(--text-muted)">Golden Retriever • John Doe</small>
+                </div>
+
+                <div class="visit-item">
+                    <div style="display:flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span class="visit-tag" style="background:#e0f2fe; color:#075985;">Aseo</span>
+                        <small style="color:var(--text-muted)">11:15 AM</small>
+                    </div>
+                    <strong>Luna</strong><br>
+                    <small style="color:var(--text-muted)">Persian Cat • Sarah Smith</small>
+                </div>
+            </div>
+        </aside>
+
+        <section>
+            <div class="card">
+                <div class="invoice-header">
+                    <div>
+                        <h2 style="margin:0">Invoice Builder</h2>
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">Draft #INV-2023-0842</span>
+                    </div>
+                    <div style="text-align: right">
+                        <small style="color: var(--text-muted)">Date</small><br>
+                        <strong>Oct 24, 2023</strong>
+                    </div>
+                </div>
+
+                <div class="table-header">
+                    <span>Descripción</span>
+                    <span>Cant</span>
+                    <span>Precio</span>
+                    <span>Total</span>
+                </div>
+
+                <div class="line-item">
+                    <div>
+                        <strong style="font-size: 0.9rem;">Examen de bienestar anual</strong><br>
+                        <small style="color: var(--text-muted)">Procedimiento • Dr. Aris</small>
+                    </div>
+                    <span>1</span>
+                    <span>$65.00</span>
+                    <strong>$65.00</strong>
+                </div>
+
+                <div class="line-item">
+                    <div>
+                        <strong style="font-size: 0.9rem;">Prevención de pulgas</strong><br>
+                        <small style="color: var(--text-muted)">Bravecto Perro Grande</small>
+                    </div>
+                    <span>1</span>
+                    <span>$54.99</span>
+                    <strong>$54.99</strong>
+                </div>
+
+                <div class="alert-box">
+                    <span class="material-symbols-outlined" style="color:#b45309">warning</span>
+                    <div>
+                        <strong style="font-size: 0.9rem;">Vacuna pendiente detectada</strong>
+                        <p style="font-size: 0.8rem; margin: 4px 0; color: #92400e;">A Buddy le toca su refuerzo de
+                            Rabia.</p>
+                        <button
+                            style="border:none; background:var(--primary); color:white; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight: 600; cursor:pointer; margin-top: 5px;">
+                            + Agregar ($45.00)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <aside>
+            <div class="card" style="margin-bottom: 20px; text-align: center;">
+                <div
+                    style="width:70px; height:70px; background:#f1f5f9; border-radius:50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center;">
+                    <span class="material-symbols-outlined" style="font-size: 30px; color: #cbd5e1;">pets</span>
+                </div>
+                <strong style="font-size: 1.1rem;">Buddy</strong><br>
+                <small style="color: var(--text-muted)">Macho de 4 años</small>
+                <div
+                    style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--bg-body); text-align: left;">
+                    <p style="margin: 5px 0;"><small>Dueño:</small> <strong>John Doe</strong></p>
+                    <p style="margin: 5px 0;"><small>Fidelidad:</small> <span class="badge-gold">Oro (1,240 pts)</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="summary-row"><span>Subtotal</span><span>$204.99</span></div>
+                <div class="summary-row"><span>Impuestos (8%)</span><span>$16.40</span></div>
+                <div class="summary-row" style="color: #059669; font-weight: 500;">
+                    <span>Descuento</span><span>-$10.00</span></div>
+                <div class="summary-row total-row"><span>Total</span><span>$211.39</span></div>
+
+                <button class="btn-primary">Finalizar e Imprimir</button>
+                <p
+                    style="text-align:center; font-size:0.8rem; color:var(--text-muted); cursor:pointer; margin-top:15px; font-weight: 500;">
+                    Guardar como cotización
+                </p>
+            </div>
+        </aside>
+    </main>
+
+</body>
+
+</html>

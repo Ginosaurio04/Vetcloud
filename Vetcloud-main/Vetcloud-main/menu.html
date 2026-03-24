@@ -1,124 +1,267 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="css/main.css" /> <title>Panel Central - Huellitas</title>
-</head>
-<body>
-    <div id="sideMenu" class="sidebar-wrapper">
-    <div class="v2_278">
-        <div class="v2_279">
-            <div class="name"></div>
-            <div class="v2_280"></div>
-            <div class="v2_291">
-                <div class="v2_292"><div class="v2_296"><span class="v2_297">Panel de Control</span></div></div>
-                <div class="v2_298"><div class="v2_302"><span class="v2_303">Pacientes</span></div></div>
-                <div class="v2_304"><div class="v2_308"><span class="v2_309">Citas</span></div></div>
-                <div class="v2_310"><div class="v2_314"><span class="v2_315">Inventario</span></div></div>
-                <div class="v2_316"><div class="v2_320"><span class="v2_321">Facturación</span></div></div>
-            </div>
-            <div class="v2_322">
-                <div class="v2_327"><span class="v2_328">Nueva Cita</span></div>
-            </div>
-        </div>
-    </div>
-</div>
+    <title>Panel Central - Huellitas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --bg-body: #f3f4f6;
+            --white: #ffffff;
+            --text-dark: #111827;
+        }
 
-<header class="main-header">
-    <div class="header-left">
-        <span class="logo-text">Panel Central</span>
-        <button class="btn-quick-action" onclick="toggleMenu()" title="Abrir Menú">
-            <span class="plus-icon">+</span>
-            <span class="btn-text">Nuevo</span>
-        </button>
-        <span class="header-date">Jueves, 26 de Octubre 2023</span>
-    </div>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: var(--bg-body);
+            margin: 0;
+            padding-top: 70px;
+        }
+
+        /* --- Header --- */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid #e5e7eb;
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 10px;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: var(--text-dark);
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        /* --- Sidebar --- */
+        .sidebar-wrapper {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100vh;
+            background: var(--white);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar-wrapper.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list li {
+            margin-bottom: 8px;
+        }
+
+        /* Navegación a otros archivos */
+        .nav-list a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #4b5563;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .nav-list a:hover {
+            background: #f3f4f6;
+            color: var(--primary);
+        }
+
+        .nav-list a.active {
+            background: #eef2ff;
+            color: var(--primary);
+        }
+
+        .btn-new-appointment {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        /* --- Grid Metrics (Simplificado para el ejemplo) --- */
+        .metrics-section {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .metric-card .value {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-top: 5px;
+        }
+
+        /* Overlay para cerrar el menú */
+        #overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 999;
+        }
+
+        #overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="overlay" onclick="toggleMenu()"></div>
+
+    <header class="main-header">
+        <div class="header-left">
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <span class="logo-text">Panel Central</span>
+            <span class="header-date" style="margin-left: 20px; color: #6b7280; font-size: 0.9rem;">Jueves, 26 de
+                Octubre 2023</span>
+        </div>
     </header>
 
-        <section class="metrics-section">
-            <div class="section-title">
-                <h2>Métricas del Día</h2>
-                <p>Monitoreo profesional en tiempo real • Huellitas</p>
-            </div>
-            <div class="metrics-grid">
-                <article class="metric-card">
-                    <span class="badge">+12% vs Ayer</span>
-                    <span class="label">Citas Hoy</span>
-                    <span class="value">24</span>
-                </article>
-                <article class="metric-card">
-                    <span class="badge warning">Crítico: 3</span>
-                    <span class="label">Alertas Inventario</span>
-                    <span class="value">5 Items</span>
-                </article>
-                <article class="metric-card">
-                    <span class="label">Nuevos Pacientes</span>
-                    <span class="value">8</span>
-                </article>
-                <article class="metric-card highlight">
-                    <span class="label">Facturación Diaria</span>
-                    <span class="value">$1,850.00</span>
-                </article>
-            </div>
-        </section>
+    <div id="sideMenu" class="sidebar-wrapper">
+        <div class="sidebar-header">
+            <span class="material-symbols-outlined">pets</span> Huellitas
+        </div>
 
-        <main class="ops-section">
-            <div class="ops-header">
-                <h3>Estado Operativo en Vivo</h3>
-                <span class="status-badge">ACTUALIZANDO</span>
-            </div>
+        <nav>
+            <ul class="nav-list">
+                <li><a href="index.html" class="active">Panel de Control</a></li>
+                <li><a href="">Pacientes</a></li>
+                <li><a href="">Citas</a></li>
+                <li><a href="inventario.html">Inventario</a></li>
+                <li><a href="factura.html">Facturación</a></li>
+            </ul>
+        </nav>
 
-            <div class="ops-columns">
-                <div class="column">
-                    <div class="col-header">En Espera <span>4</span></div>
-                    <div class="patient-card">
-                        <div class="patient-info"><strong>Max</strong><span>Golden Retriever • 3a</span></div>
-                        <div class="visit-type">Consulta</div>
-                    </div>
-                    <div class="patient-card">
-                        <div class="patient-info"><strong>Luna</strong><span>Gato Siamés • 1a</span></div>
-                        <div class="visit-type">Vacunación</div>
-                    </div>
-                </div>
-
-                <div class="column">
-                    <div class="col-header">En Consulta <span>2</span></div>
-                    <div class="patient-card active">
-                        <div class="patient-info"><strong>Bella</strong><span>Siamés • 2a</span></div>
-                        <div class="time-badge">18 min</div>
-                        <button class="btn-finish">Finalizar</button>
-                    </div>
-                </div>
-
-                <div class="column">
-                    <div class="col-header">En Peluquería <span>2</span></div>
-                    <div class="patient-card">
-                        <div class="patient-info"><strong>Coco</strong><span>Caniche Toy • 4a</span></div>
-                        <div class="visit-status">En proceso</div>
-                    </div>
-                </div>
-            </div>
-        </main>
+        <a href="" class="btn-new-appointment">+ Nueva Cita</a>
     </div>
 
+    <main class="metrics-section">
+        <div class="section-title">
+            <h2>Métricas del Día</h2>
+            <p>Monitoreo profesional en tiempo real • Huellitas</p>
+        </div>
+
+        <div class="metrics-grid">
+            <article class="metric-card">
+                <span style="font-size: 0.8rem; color: #059669; font-weight: 700;">+12% vs Ayer</span>
+                <span style="display: block; color: #6b7280;">Citas Hoy</span>
+                <span class="value">24</span>
+            </article>
+            <article class="metric-card">
+                <span style="font-size: 0.8rem; color: #dc2626; font-weight: 700;">Crítico: 3</span>
+                <span style="display: block; color: #6b7280;">Alertas Inventario</span>
+                <span class="value">5 Items</span>
+            </article>
+            <article class="metric-card">
+                <span style="display: block; color: #6b7280;">Nuevos Pacientes</span>
+                <span class="value">8</span>
+            </article>
+            <article class="metric-card" style="background: var(--primary); color: white;">
+                <span style="display: block; opacity: 0.8;">Facturación Diaria</span>
+                <span class="value">$1,850.00</span>
+            </article>
+        </div>
+    </main>
+
     <script>
-    function toggleMenu() {
-        const menu = document.getElementById('sideMenu');
-        menu.classList.toggle('active');
-        
-        // Cerrar el menú si haces clic fuera de él
-        document.addEventListener('click', function(event) {
-            const isClickInside = menu.contains(event.target) || 
-                                 event.target.closest('.btn-quick-action');
-            
-            if (!isClickInside) {
-                menu.classList.remove('active');
-            }
-        });
-    }
-</script>
+        function toggleMenu() {
+            const menu = document.getElementById('sideMenu');
+            const overlay = document.getElementById('overlay');
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+    </script>
 
 </body>
+
 </html>
