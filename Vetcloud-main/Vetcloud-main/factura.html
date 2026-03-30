@@ -4,13 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VetCloud - Invoice Builder</title>
+    <title>VetCloud - Facturación</title>
     <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Material+Symbols+Outlined" rel="stylesheet" />
     <style>
         :root {
             --primary: #4f46e5;
             --primary-light: #eef2ff;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
             --bg-body: #f8fafc;
             --text-main: #1e293b;
             --text-muted: #64748b;
@@ -18,200 +21,122 @@
             --white: #ffffff;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 0; }
 
-        /* --- Navbar Superior --- */
         nav {
-            height: 65px;
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            height: 65px; background: var(--white); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 40px; position: sticky; top: 0; z-index: 100;
+        }
+        .nav-left { display: flex; align-items: center; gap: 40px; }
+        .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+        .nav-links { list-style: none; padding: 0; margin: 0; display: flex; gap: 10px; }
+        .nav-links a { text-decoration: none; color: inherit; }
+        .nav-links li { padding: 8px 16px; border-radius: 6px; cursor: pointer; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; transition: 0.2s; }
+        .nav-links li:hover { color: var(--primary); background: var(--primary-light); }
+        .nav-links li.active { color: var(--primary); background: var(--primary-light); font-weight: 600; }
+
+        main { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+
+        .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+
+        .btn-add {
+            background: var(--primary); color: white; border: none; padding: 10px 18px;
+            border-radius: 8px; font-weight: 600; cursor: pointer; display: flex;
+            align-items: center; gap: 8px; transition: 0.2s; font-size: 0.85rem;
+        }
+        .btn-add:hover { background: #4338ca; }
+
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card {
+            background: var(--white); padding: 20px; border-radius: 12px;
+            border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .stat-label { color: var(--text-muted); font-size: 0.85rem; font-weight: 500; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; display: block; margin-top: 5px; }
+
+        /* Facturas Table */
+        .facturas-card {
+            background: var(--white); border-radius: 12px; border: 1px solid var(--border);
+            overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 40px;
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: #f8fafc; padding: 14px 24px; font-size: 0.75rem;
+            text-transform: uppercase; color: var(--text-muted); text-align: left;
         }
+        td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
-        .logo {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: var(--primary);
-            letter-spacing: -0.5px;
-        }
+        .badge-pago { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+        .pago-efectivo { background: #dcfce7; color: #166534; }
+        .pago-tarjeta { background: #e0f2fe; color: #075985; }
+        .pago-transferencia { background: #f3e8ff; color: #6b21a8; }
 
-        .nav-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            gap: 10px;
+        .action-btn {
+            color: var(--primary); background: var(--primary-light); border: none;
+            padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
+            margin-right: 4px;
         }
+        .action-btn.danger { color: var(--danger); background: #fee2e2; }
 
-        .nav-links li {
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: 0.2s;
-        }
+        .empty-table { text-align: center; padding: 40px; color: var(--text-muted); }
+        .pagination { padding: 15px 24px; display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.85rem; }
 
-        .nav-links li:hover {
-            color: var(--primary);
-            background: var(--primary-light);
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+            z-index: 200; justify-content: center; align-items: center;
         }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--white); border-radius: 16px; padding: 30px; width: 600px;
+            max-width: 90vw; max-height: 85vh; overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+        .modal h2 { margin: 0 0 20px; font-size: 1.2rem; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; box-sizing: border-box; transition: 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-actions button { flex: 1; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+        .btn-cancel { background: var(--bg-body); border: 1px solid var(--border); color: var(--text-main); }
+        .btn-submit { background: var(--primary); border: none; color: white; }
+        .btn-submit:hover { background: #4338ca; }
 
-        .nav-links li.active {
-            color: var(--primary);
-            background: var(--primary-light);
-            font-weight: 600;
+        /* Items dinámicos */
+        .items-container { border: 1px solid var(--border); border-radius: 10px; padding: 15px; margin-bottom: 16px; }
+        .items-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .items-header h4 { margin: 0; font-size: 0.9rem; }
+        .btn-add-item {
+            background: var(--primary-light); color: var(--primary); border: none; padding: 6px 12px;
+            border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
         }
+        .item-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; margin-bottom: 8px; align-items: center; }
+        .item-row input, .item-row select {
+            padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+            font-family: 'Inter', sans-serif; font-size: 0.85rem; box-sizing: border-box;
+        }
+        .btn-remove-item { background: #fee2e2; color: var(--danger); border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
 
-        /* --- Layout de Columnas --- */
-        main {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 320px 1fr 320px;
-            gap: 25px;
-            align-items: start;
-        }
+        /* Detail Modal */
+        .detail-line { display: grid; grid-template-columns: 3fr 1fr 1fr 1fr; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        .detail-line.header { font-weight: 700; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; border-bottom: 2px solid var(--border); }
+        .detail-total { display: flex; justify-content: space-between; padding-top: 15px; margin-top: 15px; border-top: 2px solid var(--border); font-weight: 800; font-size: 1.2rem; color: var(--primary); }
 
-        .card {
-            background: var(--white);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        .toast {
+            position: fixed; bottom: 30px; right: 30px; background: #065f46; color: white;
+            padding: 14px 24px; border-radius: 10px; font-weight: 600; font-size: 0.9rem;
+            z-index: 300; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-
-        h3 {
-            margin: 0 0 15px 0;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        /* --- Listas y Items --- */
-        .visit-item {
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid transparent;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-bottom: 8px;
-        }
-
-        .visit-item:hover {
-            border-color: var(--primary);
-            background: #fafafa;
-        }
-
-        .visit-item.selected {
-            border-color: var(--primary);
-            background: var(--primary-light);
-        }
-
-        .visit-tag {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 700;
-        }
-
-        /* --- Invoice Central --- */
-        .invoice-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-        }
-
-        .table-header {
-            display: grid;
-            grid-template-columns: 3fr 1fr 1fr 1fr;
-            font-weight: 600;
-            padding: 12px 0;
-            border-bottom: 2px solid var(--bg-body);
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .line-item {
-            display: grid;
-            grid-template-columns: 3fr 1fr 1fr 1fr;
-            padding: 20px 0;
-            border-bottom: 1px solid var(--border);
-            align-items: center;
-        }
-
-        .alert-box {
-            background: #fffbeb;
-            border: 1px solid #fef3c7;
-            border-radius: 10px;
-            padding: 16px;
-            margin-top: 25px;
-            display: flex;
-            gap: 12px;
-        }
-
-        /* --- Summary --- */
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 0.95rem;
-        }
-
-        .total-row {
-            font-weight: 800;
-            font-size: 1.3rem;
-            border-top: 1px solid var(--border);
-            padding-top: 15px;
-            margin-top: 15px;
-            color: var(--primary);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 14px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-primary:hover {
-            background: #4338ca;
-        }
-
-        .badge-gold {
-            background: #fef9c3;
-            color: #854d0e;
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
+        .toast.show { display: block; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 
@@ -219,132 +144,371 @@
 
     <nav>
         <div class="nav-left">
-            <div class="logo">VetCloud</div>
+            <div class="logo">
+                <span class="material-symbols-outlined">pets</span> VetCloud
+            </div>
             <ul class="nav-links">
-                <li>Dashboard</li>
-                <li>Appointments</li>
-                <li>Patients</li>
-                <li class="active">Billing</li>
-                <li>Inventory</li>
+                <li><a href="menu.html">Dashboard</a></li>
+                <li><a href="agenda.html">Agenda</a></li>
+                <li><a href="inventario.html">Inventario</a></li>
+                <li class="active"><a href="factura.html">Facturación</a></li>
             </ul>
         </div>
         <div class="nav-right" style="display: flex; align-items: center; gap: 15px;">
-            <span class="material-symbols-outlined"
-                style="color: var(--text-muted); cursor: pointer;">notifications</span>
+            <span class="material-symbols-outlined" style="color: var(--text-muted); cursor: pointer;">notifications</span>
             <div style="width: 35px; height: 35px; background: #ddd; border-radius: 50%;"></div>
         </div>
     </nav>
 
     <main>
-        <aside>
-            <div class="card">
-                <h3>Visitas activas</h3>
-                <div class="visit-item selected">
-                    <div style="display:flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span class="visit-tag" style="background:#dcfce7; color:#166534;">Médico</span>
-                        <small style="color:var(--text-muted)">10:30 AM</small>
-                    </div>
-                    <strong>Buddy</strong><br>
-                    <small style="color:var(--text-muted)">Golden Retriever • John Doe</small>
-                </div>
-
-                <div class="visit-item">
-                    <div style="display:flex; justify-content: space-between; margin-bottom: 5px;">
-                        <span class="visit-tag" style="background:#e0f2fe; color:#075985;">Aseo</span>
-                        <small style="color:var(--text-muted)">11:15 AM</small>
-                    </div>
-                    <strong>Luna</strong><br>
-                    <small style="color:var(--text-muted)">Persian Cat • Sarah Smith</small>
-                </div>
+        <header class="header-section">
+            <div>
+                <h1 style="margin:0; font-size: 1.5rem; font-weight: 700;">Facturación</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Gestión de facturas y cobros.</p>
             </div>
-        </aside>
+            <button class="btn-add" onclick="abrirModal()">
+                <span class="material-symbols-outlined" style="font-size: 18px;">add</span> Nueva Factura
+            </button>
+        </header>
 
-        <section>
-            <div class="card">
-                <div class="invoice-header">
-                    <div>
-                        <h2 style="margin:0">Invoice Builder</h2>
-                        <span style="color: var(--text-muted); font-size: 0.85rem;">Draft #INV-2023-0842</span>
-                    </div>
-                    <div style="text-align: right">
-                        <small style="color: var(--text-muted)">Date</small><br>
-                        <strong>Oct 24, 2023</strong>
-                    </div>
-                </div>
-
-                <div class="table-header">
-                    <span>Descripción</span>
-                    <span>Cant</span>
-                    <span>Precio</span>
-                    <span>Total</span>
-                </div>
-
-                <div class="line-item">
-                    <div>
-                        <strong style="font-size: 0.9rem;">Examen de bienestar anual</strong><br>
-                        <small style="color: var(--text-muted)">Procedimiento • Dr. Aris</small>
-                    </div>
-                    <span>1</span>
-                    <span>$65.00</span>
-                    <strong>$65.00</strong>
-                </div>
-
-                <div class="line-item">
-                    <div>
-                        <strong style="font-size: 0.9rem;">Prevención de pulgas</strong><br>
-                        <small style="color: var(--text-muted)">Bravecto Perro Grande</small>
-                    </div>
-                    <span>1</span>
-                    <span>$54.99</span>
-                    <strong>$54.99</strong>
-                </div>
-
-                <div class="alert-box">
-                    <span class="material-symbols-outlined" style="color:#b45309">warning</span>
-                    <div>
-                        <strong style="font-size: 0.9rem;">Vacuna pendiente detectada</strong>
-                        <p style="font-size: 0.8rem; margin: 4px 0; color: #92400e;">A Buddy le toca su refuerzo de
-                            Rabia.</p>
-                        <button
-                            style="border:none; background:var(--primary); color:white; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight: 600; cursor:pointer; margin-top: 5px;">
-                            + Agregar ($45.00)
-                        </button>
-                    </div>
-                </div>
+        <section class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Facturación del Día</span>
+                <span class="stat-value" id="stat-hoy" style="color: var(--primary);">—</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Facturas Hoy</span>
+                <span class="stat-value" id="stat-cantidad">—</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Facturación del Mes</span>
+                <span class="stat-value" id="stat-mes">—</span>
             </div>
         </section>
 
-        <aside>
-            <div class="card" style="margin-bottom: 20px; text-align: center;">
-                <div
-                    style="width:70px; height:70px; background:#f1f5f9; border-radius:50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center;">
-                    <span class="material-symbols-outlined" style="font-size: 30px; color: #cbd5e1;">pets</span>
-                </div>
-                <strong style="font-size: 1.1rem;">Buddy</strong><br>
-                <small style="color: var(--text-muted)">Macho de 4 años</small>
-                <div
-                    style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--bg-body); text-align: left;">
-                    <p style="margin: 5px 0;"><small>Dueño:</small> <strong>John Doe</strong></p>
-                    <p style="margin: 5px 0;"><small>Fidelidad:</small> <span class="badge-gold">Oro (1,240 pts)</span>
-                    </p>
-                </div>
+        <section class="facturas-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th># Factura</th>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Método de Pago</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-facturas">
+                    <tr><td colspan="6" class="empty-table">Cargando facturas...</td></tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <span id="pagination-info">—</span>
             </div>
-
-            <div class="card">
-                <div class="summary-row"><span>Subtotal</span><span>$204.99</span></div>
-                <div class="summary-row"><span>Impuestos (8%)</span><span>$16.40</span></div>
-                <div class="summary-row" style="color: #059669; font-weight: 500;">
-                    <span>Descuento</span><span>-$10.00</span></div>
-                <div class="summary-row total-row"><span>Total</span><span>$211.39</span></div>
-
-                <button class="btn-primary">Finalizar e Imprimir</button>
-                <p
-                    style="text-align:center; font-size:0.8rem; color:var(--text-muted); cursor:pointer; margin-top:15px; font-weight: 500;">
-                    Guardar como cotización
-                </p>
-            </div>
-        </aside>
+        </section>
     </main>
+
+    <!-- Modal Nueva Factura -->
+    <div class="modal-overlay" id="modalFactura">
+        <div class="modal">
+            <h2>Nueva Factura</h2>
+            <form id="formFactura" action="factura_post.php" method="POST">
+                <input type="hidden" name="accion" value="crear">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cliente</label>
+                        <select name="id_cliente" id="inp-cliente" required>
+                            <option value="">— Seleccione —</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Método de Pago</label>
+                        <select name="metodo_pago" required>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                            <option value="Transferencia">Transferencia</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="items-container">
+                    <div class="items-header">
+                        <h4>Ítems de la Factura</h4>
+                        <button type="button" class="btn-add-item" onclick="agregarItem()">+ Agregar Ítem</button>
+                    </div>
+                    <div id="items-list">
+                        <!-- Items dinámicos van aquí -->
+                    </div>
+                    <div style="text-align:right; margin-top:10px; font-weight:700; font-size:1.1rem; color: var(--primary);">
+                        Total: $<span id="total-preview">0.00</span>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-submit">Crear Factura</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Detalle Factura -->
+    <div class="modal-overlay" id="modalDetalle">
+        <div class="modal">
+            <h2 id="detalle-titulo">Factura #—</h2>
+            <div style="margin-bottom:15px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <div>
+                        <small style="color:var(--text-muted)">Cliente</small><br>
+                        <strong id="det-cliente">—</strong>
+                    </div>
+                    <div style="text-align:right">
+                        <small style="color:var(--text-muted)">Fecha</small><br>
+                        <strong id="det-fecha">—</strong>
+                    </div>
+                </div>
+                <div>
+                    <small style="color:var(--text-muted)">Cédula:</small> <span id="det-cedula">—</span> |
+                    <small style="color:var(--text-muted)">Tel:</small> <span id="det-telefono">—</span>
+                </div>
+            </div>
+
+            <div class="detail-line header">
+                <span>Descripción</span><span>Cant</span><span>P/U</span><span>Subtotal</span>
+            </div>
+            <div id="det-lineas"></div>
+            <div class="detail-total">
+                <span>Total</span>
+                <span id="det-total">$0.00</span>
+            </div>
+
+            <div class="modal-actions" style="margin-top:25px;">
+                <button type="button" class="btn-cancel" onclick="cerrarDetalle()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let itemCount = 0;
+        let productosDisponibles = [];
+
+        // ===== Cargar estadísticas =====
+        function cargarEstadisticas() {
+            fetch('factura_post.php?accion=estadisticas')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('stat-hoy').textContent = '$' + parseFloat(data.total_hoy).toLocaleString('en-US', {minimumFractionDigits:2});
+                    document.getElementById('stat-cantidad').textContent = data.facturas_hoy;
+                    document.getElementById('stat-mes').textContent = '$' + parseFloat(data.total_mes).toLocaleString('en-US', {minimumFractionDigits:2});
+                })
+                .catch(() => {
+                    document.getElementById('stat-hoy').textContent = '$0.00';
+                    document.getElementById('stat-cantidad').textContent = '0';
+                    document.getElementById('stat-mes').textContent = '$0.00';
+                });
+        }
+
+        // ===== Cargar facturas =====
+        function cargarFacturas() {
+            fetch('factura_post.php?accion=listar')
+                .then(r => r.json())
+                .then(facturas => {
+                    const tbody = document.getElementById('tabla-facturas');
+                    if (facturas.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="empty-table">No hay facturas registradas.</td></tr>';
+                        document.getElementById('pagination-info').textContent = '0 facturas';
+                        return;
+                    }
+
+                    tbody.innerHTML = facturas.map(f => {
+                        const fecha = new Date(f.fecha_emision).toLocaleDateString('es-VE', {day:'2-digit',month:'short',year:'numeric'});
+                        const pagoClass = {'Efectivo':'pago-efectivo','Tarjeta':'pago-tarjeta','Transferencia':'pago-transferencia'}[f.metodo_pago] || 'pago-efectivo';
+
+                        return `<tr>
+                            <td><strong>#INV-${String(f.id_factura).padStart(4,'0')}</strong></td>
+                            <td>
+                                <strong>${f.cliente}</strong><br>
+                                <small style="color:var(--text-muted)">${f.cedula}</small>
+                            </td>
+                            <td>${fecha}</td>
+                            <td><span class="badge-pago ${pagoClass}">${f.metodo_pago}</span></td>
+                            <td><strong>$${parseFloat(f.total_pagar).toFixed(2)}</strong></td>
+                            <td>
+                                <button class="action-btn" onclick="verDetalle(${f.id_factura})">Ver</button>
+                                <button class="action-btn danger" onclick="eliminarFactura(${f.id_factura})">Eliminar</button>
+                            </td>
+                        </tr>`;
+                    }).join('');
+
+                    document.getElementById('pagination-info').textContent = facturas.length + ' factura(s)';
+                })
+                .catch(() => {
+                    document.getElementById('tabla-facturas').innerHTML = '<tr><td colspan="6" class="empty-table">Error al cargar. Verifique conexión.</td></tr>';
+                });
+        }
+
+        // ===== Cargar clientes =====
+        function cargarClientes() {
+            fetch('factura_post.php?accion=obtener_clientes')
+                .then(r => r.json())
+                .then(clientes => {
+                    const select = document.getElementById('inp-cliente');
+                    select.innerHTML = '<option value="">— Seleccione —</option>';
+                    clientes.forEach(c => {
+                        select.innerHTML += `<option value="${c.id_cliente}">${c.nombre_completo} (${c.cedula})</option>`;
+                    });
+                });
+        }
+
+        // ===== Cargar productos =====
+        function cargarProductos() {
+            fetch('factura_post.php?accion=obtener_productos')
+                .then(r => r.json())
+                .then(productos => {
+                    productosDisponibles = productos;
+                });
+        }
+
+        // ===== Items dinámicos =====
+        function agregarItem() {
+            itemCount++;
+            const div = document.createElement('div');
+            div.className = 'item-row';
+            div.id = 'item-' + itemCount;
+
+            let opcionesProducto = '<option value="">Servicio personalizado</option>';
+            productosDisponibles.forEach(p => {
+                opcionesProducto += `<option value="${p.id_producto}" data-precio="${p.precio_venta}">${p.nombre_producto} ($${parseFloat(p.precio_venta).toFixed(2)}) - Stock: ${p.stock_actual}</option>`;
+            });
+
+            div.innerHTML = `
+                <div>
+                    <select name="items[${itemCount}][id_producto]" onchange="seleccionarProducto(this, ${itemCount})" style="width:100%; margin-bottom:4px;">
+                        ${opcionesProducto}
+                    </select>
+                    <input type="text" name="items[${itemCount}][descripcion]" placeholder="Descripción del servicio/producto" required>
+                </div>
+                <input type="number" name="items[${itemCount}][cantidad]" value="1" min="1" onchange="calcularTotal()" required>
+                <input type="number" step="0.01" name="items[${itemCount}][precio_unitario]" placeholder="Precio" onchange="calcularTotal()" required>
+                <button type="button" class="btn-remove-item" onclick="removerItem(${itemCount})">✕</button>
+            `;
+            document.getElementById('items-list').appendChild(div);
+        }
+
+        function seleccionarProducto(select, idx) {
+            const option = select.options[select.selectedIndex];
+            const precio = option.getAttribute('data-precio');
+            const row = document.getElementById('item-' + idx);
+            if (precio) {
+                row.querySelector('input[name*="precio_unitario"]').value = precio;
+                row.querySelector('input[name*="descripcion"]').value = option.textContent.split(' ($')[0];
+            }
+            calcularTotal();
+        }
+
+        function removerItem(idx) {
+            const el = document.getElementById('item-' + idx);
+            if (el) el.remove();
+            calcularTotal();
+        }
+
+        function calcularTotal() {
+            let total = 0;
+            document.querySelectorAll('.item-row').forEach(row => {
+                const cant = parseFloat(row.querySelector('input[name*="cantidad"]')?.value) || 0;
+                const precio = parseFloat(row.querySelector('input[name*="precio_unitario"]')?.value) || 0;
+                total += cant * precio;
+            });
+            document.getElementById('total-preview').textContent = total.toFixed(2);
+        }
+
+        // ===== Modal =====
+        function abrirModal() {
+            cargarClientes();
+            cargarProductos();
+            document.getElementById('formFactura').reset();
+            document.getElementById('items-list').innerHTML = '';
+            document.getElementById('total-preview').textContent = '0.00';
+            itemCount = 0;
+            agregarItem(); // Agregar un ítem por defecto
+            document.getElementById('modalFactura').classList.add('active');
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalFactura').classList.remove('active');
+        }
+
+        // ===== Ver detalle =====
+        function verDetalle(id) {
+            fetch('factura_post.php?accion=detalle&id_factura=' + id)
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('detalle-titulo').textContent = 'Factura #INV-' + String(data.id_factura).padStart(4, '0');
+                    document.getElementById('det-cliente').textContent = data.cliente;
+                    document.getElementById('det-cedula').textContent = data.cedula;
+                    document.getElementById('det-telefono').textContent = data.telefono || '—';
+                    document.getElementById('det-fecha').textContent = new Date(data.fecha_emision).toLocaleDateString('es-VE');
+
+                    const lineas = document.getElementById('det-lineas');
+                    lineas.innerHTML = data.detalles.map(d => `
+                        <div class="detail-line">
+                            <span><strong>${d.nombre_producto || d.descripcion_servicio}</strong></span>
+                            <span>${d.cantidad}</span>
+                            <span>$${parseFloat(d.precio_unitario).toFixed(2)}</span>
+                            <span><strong>$${parseFloat(d.subtotal).toFixed(2)}</strong></span>
+                        </div>
+                    `).join('');
+
+                    document.getElementById('det-total').textContent = '$' + parseFloat(data.total_pagar).toFixed(2);
+                    document.getElementById('modalDetalle').classList.add('active');
+                });
+        }
+
+        function cerrarDetalle() {
+            document.getElementById('modalDetalle').classList.remove('active');
+        }
+
+        // ===== Eliminar =====
+        function eliminarFactura(id) {
+            if (!confirm('¿Seguro que desea eliminar esta factura?')) return;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'factura_post.php';
+            form.innerHTML = `<input type="hidden" name="accion" value="eliminar"><input type="hidden" name="id_factura" value="${id}">`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // ===== Cerrar modales =====
+        document.getElementById('modalFactura').addEventListener('click', function(e) { if (e.target === this) cerrarModal(); });
+        document.getElementById('modalDetalle').addEventListener('click', function(e) { if (e.target === this) cerrarDetalle(); });
+
+        // ===== Toast =====
+        function mostrarToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('msg')) {
+            const msgs = {
+                'factura_creada': '✅ Factura creada exitosamente',
+                'item_agregado': '✅ Ítem agregado a la factura',
+                'factura_eliminada': '✅ Factura eliminada'
+            };
+            mostrarToast(msgs[params.get('msg')] || '✅ Acción completada');
+            window.history.replaceState({}, '', 'factura.html');
+        }
+
+        // ===== Iniciar =====
+        cargarEstadisticas();
+        cargarFacturas();
+    </script>
 
 </body>
 
