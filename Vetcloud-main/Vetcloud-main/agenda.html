@@ -21,114 +21,405 @@
             --white: #ffffff;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+        }
 
         nav {
-            height: 65px; background: var(--white); border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 40px; position: sticky; top: 0; z-index: 100;
+            height: 65px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .nav-left { display: flex; align-items: center; gap: 40px; }
-        .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
-        .nav-links { list-style: none; padding: 0; margin: 0; display: flex; gap: 10px; }
-        .nav-links li { list-style: none; }
-        .nav-links a { display: block; text-decoration: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; transition: 0.2s; }
-        .nav-links a:hover { color: var(--primary); background: var(--primary-light); }
-        .nav-links li.active a { color: var(--primary); background: var(--primary-light); font-weight: 600; }
 
-        main { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
 
-        .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-links li {
+            list-style: none;
+        }
+
+        .nav-links a {
+            display: block;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .nav-links li.active a {
+            color: var(--primary);
+            background: var(--primary-light);
+            font-weight: 600;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
 
         .btn-add {
-            background: var(--primary); color: white; border: none; padding: 10px 18px;
-            border-radius: 8px; font-weight: 600; cursor: pointer; display: flex;
-            align-items: center; gap: 8px; transition: 0.2s; font-size: 0.85rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            font-size: 0.85rem;
         }
-        .btn-add:hover { background: #4338ca; }
+
+        .btn-add:hover {
+            background: #4338ca;
+        }
 
         /* Stats */
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
-        .stat-card {
-            background: var(--white); padding: 18px; border-radius: 12px;
-            border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); text-align: center;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
         }
-        .stat-label { color: var(--text-muted); font-size: 0.75rem; font-weight: 500; }
-        .stat-value { font-size: 1.4rem; font-weight: 700; display: block; margin-top: 4px; }
+
+        .stat-card {
+            background: var(--white);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: block;
+            margin-top: 4px;
+        }
 
         /* Citas Table */
         .citas-card {
-            background: var(--white); border-radius: 12px; border: 1px solid var(--border);
-            overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: var(--white);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
-        table { width: 100%; border-collapse: collapse; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
         th {
-            background: #f8fafc; padding: 14px 20px; font-size: 0.75rem;
-            text-transform: uppercase; color: var(--text-muted); text-align: left;
+            background: #f8fafc;
+            padding: 14px 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            text-align: left;
         }
-        td { padding: 14px 20px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
-        .badge-consulta { background: #dcfce7; color: #166534; }
-        .badge-peluqueria { background: #f3e8ff; color: #6b21a8; }
-        .badge-cirugia { background: #fef3c7; color: #92400e; }
+        td {
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
 
-        .estado-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
-        .estado-espera { background: #fef3c7; color: #92400e; }
-        .estado-consulta { background: #e0f2fe; color: #075985; }
-        .estado-peluqueria { background: #f3e8ff; color: #6b21a8; }
-        .estado-finalizado { background: #dcfce7; color: #166534; }
-        .estado-cancelado { background: #fee2e2; color: #991b1b; }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-consulta {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-peluqueria {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .badge-cirugia {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .estado-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .estado-espera {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .estado-consulta {
+            background: #e0f2fe;
+            color: #075985;
+        }
+
+        .estado-peluqueria {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .estado-finalizado {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .estado-cancelado {
+            background: #fee2e2;
+            color: #991b1b;
+        }
 
         .action-btn {
-            color: var(--primary); background: var(--primary-light); border: none;
-            padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;
+            color: var(--primary);
+            background: var(--primary-light);
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
             margin-right: 4px;
         }
-        .action-btn.success { color: #166534; background: #dcfce7; }
-        .action-btn.danger { color: var(--danger); background: #fee2e2; }
 
-        .empty-table { text-align: center; padding: 40px; color: var(--text-muted); }
-        .pagination { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.85rem; }
+        .action-btn.success {
+            color: #166534;
+            background: #dcfce7;
+        }
+
+        .action-btn.danger {
+            color: var(--danger);
+            background: #fee2e2;
+        }
+
+        .empty-table {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .pagination {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
 
         /* Modal */
         .modal-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-            z-index: 200; justify-content: center; align-items: center;
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
         }
-        .modal-overlay.active { display: flex; }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
         .modal {
-            background: var(--white); border-radius: 16px; padding: 30px; width: 500px;
-            max-width: 90vw; max-height: 85vh; overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            background: var(--white);
+            border-radius: 16px;
+            padding: 30px;
+            width: 500px;
+            max-width: 90vw;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         }
-        .modal h2 { margin: 0 0 20px; font-size: 1.2rem; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px;
-            font-family: 'Inter', sans-serif; font-size: 0.9rem; box-sizing: border-box; transition: 0.2s;
+
+        .modal h2 {
+            margin: 0 0 20px;
+            font-size: 1.2rem;
         }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
-        .form-group textarea { resize: vertical; min-height: 80px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-        .modal-actions button { flex: 1; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem; }
-        .btn-cancel { background: var(--bg-body); border: 1px solid var(--border); color: var(--text-main); }
-        .btn-submit { background: var(--primary); border: none; color: white; }
-        .btn-submit:hover { background: #4338ca; }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-cancel {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            border: none;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #4338ca;
+        }
 
         .toast {
-            position: fixed; bottom: 30px; right: 30px; background: #065f46; color: white;
-            padding: 14px 24px; border-radius: 10px; font-weight: 600; font-size: 0.9rem;
-            z-index: 300; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #065f46;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 300;
+            display: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        .toast.show { display: block; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .toast.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
 
         @media (max-width: 768px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -148,7 +439,8 @@
             </ul>
         </div>
         <div class="nav-right" style="display: flex; align-items: center; gap: 15px;">
-            <span class="material-symbols-outlined" style="color: var(--text-muted); cursor: pointer;">notifications</span>
+            <span class="material-symbols-outlined"
+                style="color: var(--text-muted); cursor: pointer;">notifications</span>
             <div style="width: 35px; height: 35px; background: #ddd; border-radius: 50%;"></div>
         </div>
     </nav>
@@ -157,10 +449,12 @@
         <header class="header-section">
             <div>
                 <h1 style="margin:0; font-size: 1.5rem; font-weight: 700;">Agenda de Citas</h1>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Gestión de citas y consultas del día.</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Gestión de citas y consultas
+                    del día.</p>
             </div>
             <div style="display:flex; gap:12px; align-items:center;">
-                <input type="date" id="filtro-fecha" style="padding:8px 14px; border:1px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:0.85rem;">
+                <input type="date" id="filtro-fecha"
+                    style="padding:8px 14px; border:1px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:0.85rem;">
                 <button class="btn-add" onclick="abrirModal()">
                     <span class="material-symbols-outlined" style="font-size: 18px;">add</span> Nueva Cita
                 </button>
@@ -200,7 +494,9 @@
                     </tr>
                 </thead>
                 <tbody id="tabla-citas">
-                    <tr><td colspan="7" class="empty-table">Cargando citas...</td></tr>
+                    <tr>
+                        <td colspan="7" class="empty-table">Cargando citas...</td>
+                    </tr>
                 </tbody>
             </table>
             <div class="pagination">
@@ -246,7 +542,8 @@
 
                 <div class="form-group">
                     <label>Observaciones</label>
-                    <textarea name="observaciones" id="inp-obs" placeholder="Notas adicionales sobre la cita..."></textarea>
+                    <textarea name="observaciones" id="inp-obs"
+                        placeholder="Notas adicionales sobre la cita..."></textarea>
                 </div>
 
                 <div class="modal-actions">
@@ -302,11 +599,11 @@
                     }
 
                     tbody.innerHTML = citas.map(c => {
-                        const hora = new Date(c.fecha_cita).toLocaleTimeString('es-VE', {hour:'2-digit', minute:'2-digit'});
-                        const tipoClass = {'Consulta Médica':'badge-consulta','Peluquería':'badge-peluqueria','Cirugía':'badge-cirugia'}[c.tipo_servicio] || 'badge-consulta';
+                        const hora = new Date(c.fecha_cita).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
+                        const tipoClass = { 'Consulta Médica': 'badge-consulta', 'Peluquería': 'badge-peluqueria', 'Cirugía': 'badge-cirugia' }[c.tipo_servicio] || 'badge-consulta';
                         const estadoClass = {
-                            'En Espera':'estado-espera','En Consulta':'estado-consulta',
-                            'En Peluquería':'estado-peluqueria','Finalizado':'estado-finalizado','Cancelado':'estado-cancelado'
+                            'En Espera': 'estado-espera', 'En Consulta': 'estado-consulta',
+                            'En Peluquería': 'estado-peluqueria', 'Finalizado': 'estado-finalizado', 'Cancelado': 'estado-cancelado'
                         }[c.estado] || 'estado-espera';
 
                         return `<tr>
@@ -404,8 +701,8 @@
         fechaInput.addEventListener('change', () => { cargarCitas(); cargarEstadisticas(); });
 
         // ===== Cerrar modales con click afuera =====
-        document.getElementById('modalCita').addEventListener('click', function(e) { if (e.target === this) cerrarModal(); });
-        document.getElementById('modalEstado').addEventListener('click', function(e) { if (e.target === this) cerrarModalEstado(); });
+        document.getElementById('modalCita').addEventListener('click', function (e) { if (e.target === this) cerrarModal(); });
+        document.getElementById('modalEstado').addEventListener('click', function (e) { if (e.target === this) cerrarModalEstado(); });
 
         // ===== Toast =====
         function mostrarToast(msg) {
