@@ -236,6 +236,30 @@ switch ($accion) {
         echo json_encode($stats);
         break;
 
+    // =============================================
+    // OBTENER CITAS DEL DÍA (para sidebar de facturación)
+    // =============================================
+    case 'obtener_citas_hoy':
+        $resultado = $conexion->query("
+            SELECT c.id_cita, c.fecha_cita, c.tipo_servicio, c.estado, c.observaciones,
+                   m.nombre_animal, m.especie, m.raza,
+                   cl.id_cliente, cl.nombre_completo AS dueno, cl.telefono, cl.cedula, cl.puntos_fidelidad
+            FROM citas c
+            INNER JOIN mascotas m ON c.id_mascota = m.id_mascota
+            INNER JOIN clientes cl ON m.id_cliente = cl.id_cliente
+            WHERE DATE(c.fecha_cita) = CURDATE()
+            ORDER BY c.fecha_cita ASC
+        ");
+
+        $citas = [];
+        while ($fila = $resultado->fetch_assoc()) {
+            $citas[] = $fila;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($citas);
+        break;
+
     default:
         echo "Acción no reconocida.";
         break;
