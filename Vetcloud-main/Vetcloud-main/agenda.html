@@ -7,6 +7,7 @@
     <title>VetCloud - Agenda de Citas</title>
     <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
     <style>
         :root {
             --primary: #4f46e5;
@@ -416,6 +417,44 @@
             }
         }
 
+        /* --- FullCalendar Overrides --- */
+        .fc {
+            font-family: 'Inter', sans-serif;
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        .fc-theme-standard td, .fc-theme-standard th {
+            border-color: var(--border);
+        }
+        .fc-col-header-cell-cushion, .fc-daygrid-day-number {
+            color: var(--text-main);
+            text-decoration: none !important;
+        }
+        .fc .fc-button-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            text-transform: capitalize;
+        }
+        .fc .fc-button-primary:not(:disabled):active, .fc .fc-button-primary:not(:disabled).fc-button-active {
+            background-color: #4338ca;
+            border-color: #4338ca;
+        }
+        .fc-event {
+            cursor: pointer;
+            border: none !important;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .fc-timegrid-slot {
+            height: 40px !important;
+        }
+        .citas-card {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -449,12 +488,9 @@
         <header class="header-section">
             <div>
                 <h1 style="margin:0; font-size: 1.5rem; font-weight: 700;">Agenda de Citas</h1>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Gestión de citas y consultas
-                    del día.</p>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Gestión de citas semanales y programación del día.</p>
             </div>
             <div style="display:flex; gap:12px; align-items:center;">
-                <input type="date" id="filtro-fecha"
-                    style="padding:8px 14px; border:1px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:0.85rem;">
                 <button class="btn-add" onclick="abrirModal()">
                     <span class="material-symbols-outlined" style="font-size: 18px;">add</span> Nueva Cita
                 </button>
@@ -481,27 +517,7 @@
         </section>
 
         <section class="citas-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Hora</th>
-                        <th>Mascota</th>
-                        <th>Dueño</th>
-                        <th>Tipo</th>
-                        <th>Box</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-citas">
-                    <tr>
-                        <td colspan="7" class="empty-table">Cargando citas...</td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="pagination">
-                <span id="pagination-info">—</span>
-            </div>
+            <div id="calendar"></div>
         </section>
     </main>
 
@@ -554,10 +570,20 @@
         </div>
     </div>
 
-    <!-- Modal Cambiar Estado -->
+    <!-- Modal Detalle / Cambiar Estado -->
     <div class="modal-overlay" id="modalEstado">
-        <div class="modal" style="width:380px;">
-            <h2>Cambiar Estado</h2>
+        <div class="modal" style="width:400px;">
+            <div style="display: flex; justify-content: space-between; align-items:flex-start;">
+                <h2 style="margin-bottom: 10px;" id="det-titulo">Detalles de Cita</h2>
+                <span id="det-badge" class="badge"></span>
+            </div>
+            <div style="margin-bottom: 20px; font-size: 0.9rem; color: var(--text-muted); padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+                <p style="margin: 4px 0;"><strong>Dueño:</strong> <span id="det-dueno"></span></p>
+                <p style="margin: 4px 0;"><strong>Teléfono:</strong> <span id="det-tel"></span></p>
+                <p style="margin: 4px 0;"><strong>Tipo de Servicio:</strong> <span id="det-tipo"></span></p>
+                <p style="margin: 4px 0;"><strong>Box:</strong> <span id="det-box"></span></p>
+                <p style="margin: 4px 0;"><strong>Observaciones:</strong> <span id="det-obs"></span></p>
+            </div>
             <form action="agenda_post.php" method="POST">
                 <input type="hidden" name="accion" value="actualizar_estado">
                 <input type="hidden" name="id_cita" id="estado-id">
@@ -571,69 +597,89 @@
                         <option value="Cancelado">Cancelado</option>
                     </select>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" onclick="cerrarModalEstado()">Cancelar</button>
-                    <button type="submit" class="btn-submit">Actualizar</button>
+                <div class="modal-actions" style="margin-top:20px;">
+                    <button type="submit" class="btn-submit" style="flex:2;">Actualizar Estado</button>
+                    <button type="button" class="btn-cancel" onclick="cerrarModalEstado()" style="flex:1;">Cerrar</button>
                 </div>
             </form>
+            <div style="margin-top: 10px; text-align: center;">
+                <button type="button" class="action-btn danger" onclick="eliminarCitaDesdeModal()" style="width: 100%; border-radius: 8px; padding: 10px;">Eliminar Permanentemente</button>
+            </div>
         </div>
     </div>
 
     <div class="toast" id="toast"></div>
 
     <script>
-        const fechaInput = document.getElementById('filtro-fecha');
-        fechaInput.value = new Date().toISOString().split('T')[0];
+        let calendarObj = null;
 
-        // ===== Cargar citas =====
-        function cargarCitas() {
-            const fecha = fechaInput.value;
-            fetch('agenda_post.php?accion=listar&fecha=' + fecha)
-                .then(r => r.json())
-                .then(citas => {
-                    const tbody = document.getElementById('tabla-citas');
-                    if (citas.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="7" class="empty-table">No hay citas para esta fecha.</td></tr>';
-                        document.getElementById('pagination-info').textContent = '0 citas';
-                        return;
-                    }
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
 
-                    tbody.innerHTML = citas.map(c => {
-                        const hora = new Date(c.fecha_cita).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
-                        const tipoClass = { 'Consulta Médica': 'badge-consulta', 'Peluquería': 'badge-peluqueria', 'Cirugía': 'badge-cirugia' }[c.tipo_servicio] || 'badge-consulta';
-                        const estadoClass = {
-                            'En Espera': 'estado-espera', 'En Consulta': 'estado-consulta',
-                            'En Peluquería': 'estado-peluqueria', 'Finalizado': 'estado-finalizado', 'Cancelado': 'estado-cancelado'
-                        }[c.estado] || 'estado-espera';
+            calendarObj = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                locale: 'es',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                slotMinTime: '08:00:00',
+                slotMaxTime: '19:00:00',
+                allDaySlot: false,
+                buttonText: {
+                    today: 'Hoy',
+                    month: 'Mes',
+                    week: 'Semana',
+                    day: 'Día'
+                },
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    const start = fetchInfo.startStr.split('T')[0];
+                    const end = fetchInfo.endStr.split('T')[0];
+                    
+                    cargarEstadisticas(start, end);
 
-                        return `<tr>
-                            <td><strong>${hora}</strong></td>
-                            <td>
-                                <strong>${c.nombre_animal}</strong><br>
-                                <small style="color:var(--text-muted)">${c.especie} • ${c.raza || ''}</small>
-                            </td>
-                            <td>${c.dueno}<br><small style="color:var(--text-muted)">${c.telefono || ''}</small></td>
-                            <td><span class="badge ${tipoClass}">${c.tipo_servicio}</span></td>
-                            <td>${c.nro_box || '—'}</td>
-                            <td><span class="estado-badge ${estadoClass}">${c.estado}</span></td>
-                            <td>
-                                <button class="action-btn success" onclick="abrirModalEstado(${c.id_cita}, '${c.estado}')">Estado</button>
-                                <button class="action-btn danger" onclick="eliminarCita(${c.id_cita})">Eliminar</button>
-                            </td>
-                        </tr>`;
-                    }).join('');
+                    fetch('agenda_post.php?accion=listar&start=' + start + '&end=' + end)
+                        .then(r => r.json())
+                        .then(data => {
+                            const events = data.map(c => {
+                                let bgColor = '#f59e0b'; // warning/espera por defecto
+                                if (c.estado === 'En Consulta') bgColor = '#0ea5e9'; // sky
+                                else if (c.estado === 'En Peluquería') bgColor = '#a855f7'; // purple
+                                else if (c.estado === 'Finalizado') bgColor = '#22c55e'; // green
+                                else if (c.estado === 'Cancelado') bgColor = '#ef4444'; // red
 
-                    document.getElementById('pagination-info').textContent = citas.length + ' cita(s)';
-                })
-                .catch(() => {
-                    document.getElementById('tabla-citas').innerHTML = '<tr><td colspan="7" class="empty-table">Error al cargar. Verifique conexión con BD.</td></tr>';
-                });
-        }
+                                const startObj = new Date(c.fecha_cita);
+                                const endObj = new Date(startObj.getTime() + 60 * 60 * 1000); // Duración base 1 hora
+
+                                return {
+                                    id: c.id_cita,
+                                    title: c.nombre_animal + ' - ' + c.tipo_servicio,
+                                    start: startObj,
+                                    end: endObj,
+                                    backgroundColor: bgColor,
+                                    extendedProps: c
+                                };
+                            });
+                            successCallback(events);
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            failureCallback(err);
+                        });
+                },
+                eventClick: function(info) {
+                    abrirModalEstado(info.event.extendedProps);
+                }
+            });
+
+            calendarObj.render();
+            cargarMascotas();
+        });
 
         // ===== Cargar estadísticas =====
-        function cargarEstadisticas() {
-            const fecha = fechaInput.value;
-            fetch('agenda_post.php?accion=estadisticas&fecha=' + fecha)
+        function cargarEstadisticas(start, end) {
+            fetch(`agenda_post.php?accion=estadisticas&start=${start}&end=${end}`)
                 .then(r => r.json())
                 .then(data => {
                     document.getElementById('stat-total').textContent = data.total;
@@ -667,7 +713,12 @@
             document.getElementById('modal-titulo').textContent = 'Nueva Cita';
             document.getElementById('form-accion').value = 'crear';
             document.getElementById('formCita').reset();
-            cargarMascotas();
+            
+            // Sugerir la fecha actual o centro de la vista actual del calendario
+            const today = new Date();
+            today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+            document.getElementById('inp-fecha').value = today.toISOString().slice(0, 16);
+            
             document.getElementById('modalCita').classList.add('active');
         }
 
@@ -675,10 +726,25 @@
             document.getElementById('modalCita').classList.remove('active');
         }
 
-        // ===== Modal Estado =====
-        function abrirModalEstado(id, estadoActual) {
-            document.getElementById('estado-id').value = id;
-            document.getElementById('estado-select').value = estadoActual;
+        // ===== Modal Detalle/Estado =====
+        function abrirModalEstado(data) {
+            document.getElementById('det-titulo').textContent = data.nombre_animal;
+            document.getElementById('det-dueno').textContent = data.dueno;
+            document.getElementById('det-tel').textContent = data.telefono || 'No registrado';
+            document.getElementById('det-tipo').textContent = data.tipo_servicio;
+            document.getElementById('det-box').textContent = data.nro_box || '—';
+            document.getElementById('det-obs').textContent = data.observaciones || '—';
+            
+            const badge = document.getElementById('det-badge');
+            badge.textContent = data.estado;
+            const estadoClass = {
+                'En Espera': 'estado-espera', 'En Consulta': 'estado-consulta',
+                'En Peluquería': 'estado-peluqueria', 'Finalizado': 'estado-finalizado', 'Cancelado': 'estado-cancelado'
+            }[data.estado] || 'estado-espera';
+            badge.className = 'badge ' + estadoClass;
+
+            document.getElementById('estado-id').value = data.id_cita;
+            document.getElementById('estado-select').value = data.estado;
             document.getElementById('modalEstado').classList.add('active');
         }
 
@@ -687,8 +753,9 @@
         }
 
         // ===== Eliminar =====
-        function eliminarCita(id) {
-            if (!confirm('¿Seguro que desea eliminar esta cita?')) return;
+        function eliminarCitaDesdeModal() {
+            const id = document.getElementById('estado-id').value;
+            if (!confirm('¿Seguro que desea eliminar esta cita permanentemente?')) return;
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = 'agenda_post.php';
@@ -696,9 +763,6 @@
             document.body.appendChild(form);
             form.submit();
         }
-
-        // ===== Cambio de fecha =====
-        fechaInput.addEventListener('change', () => { cargarCitas(); cargarEstadisticas(); });
 
         // ===== Cerrar modales con click afuera =====
         document.getElementById('modalCita').addEventListener('click', function (e) { if (e.target === this) cerrarModal(); });
@@ -723,10 +787,6 @@
             mostrarToast(msgs[params.get('msg')] || '✅ Acción completada');
             window.history.replaceState({}, '', 'agenda.html');
         }
-
-        // ===== Iniciar =====
-        cargarCitas();
-        cargarEstadisticas();
     </script>
 
 </body>

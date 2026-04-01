@@ -35,19 +35,34 @@ switch ($accion) {
     // LISTAR CITAS (por fecha o todas)
     // =============================================
     case 'listar':
-        $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
-
-        $stmt = $conexion->prepare("
-            SELECT c.id_cita, c.fecha_cita, c.tipo_servicio, c.nro_box, c.estado, c.observaciones,
-                   m.nombre_animal, m.especie, m.raza,
-                   cl.nombre_completo AS dueno, cl.telefono
-            FROM citas c
-            INNER JOIN mascotas m ON c.id_mascota = m.id_mascota
-            INNER JOIN clientes cl ON m.id_cliente = cl.id_cliente
-            WHERE DATE(c.fecha_cita) = ?
-            ORDER BY c.fecha_cita ASC
-        ");
-        $stmt->bind_param("s", $fecha);
+        if (isset($_GET['start']) && isset($_GET['end'])) {
+            $start = $_GET['start'];
+            $end = $_GET['end'];
+            $stmt = $conexion->prepare("
+                SELECT c.id_cita, c.fecha_cita, c.tipo_servicio, c.nro_box, c.estado, c.observaciones,
+                       m.nombre_animal, m.especie, m.raza,
+                       cl.nombre_completo AS dueno, cl.telefono
+                FROM citas c
+                INNER JOIN mascotas m ON c.id_mascota = m.id_mascota
+                INNER JOIN clientes cl ON m.id_cliente = cl.id_cliente
+                WHERE c.fecha_cita >= ? AND c.fecha_cita < ?
+                ORDER BY c.fecha_cita ASC
+            ");
+            $stmt->bind_param("ss", $start, $end);
+        } else {
+            $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
+            $stmt = $conexion->prepare("
+                SELECT c.id_cita, c.fecha_cita, c.tipo_servicio, c.nro_box, c.estado, c.observaciones,
+                       m.nombre_animal, m.especie, m.raza,
+                       cl.nombre_completo AS dueno, cl.telefono
+                FROM citas c
+                INNER JOIN mascotas m ON c.id_mascota = m.id_mascota
+                INNER JOIN clientes cl ON m.id_cliente = cl.id_cliente
+                WHERE DATE(c.fecha_cita) = ?
+                ORDER BY c.fecha_cita ASC
+            ");
+            $stmt->bind_param("s", $fecha);
+        }
         $stmt->execute();
         $resultado = $stmt->get_result();
 
@@ -157,27 +172,41 @@ switch ($accion) {
     // CONTAR CITAS DEL DÍA (estadísticas)
     // =============================================
     case 'estadisticas':
-        $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
-
         $stats = [];
+        if (isset($_GET['start']) && isset($_GET['end'])) {
+            $start = $_GET['start'];
+            $end = $_GET['end'];
+            
+            $stmtTotal = $conexion->prepare("SELECT COUNT(*) as total FROM citas WHERE fecha_cita >= ? AND fecha_cita < ?");
+            $stmtTotal->bind_param("ss", $start, $end);
+            $stmtTotal->execute();
+            $stats['total'] = $stmtTotal->get_result()->fetch_assoc()['total'];
+            $stmtTotal->close();
 
-        // Total del día
-        $stmt = $conexion->prepare("SELECT COUNT(*) as total FROM citas WHERE DATE(fecha_cita) = ?");
-        $stmt->bind_param("s", $fecha);
-        $stmt->execute();
-        $stats['total'] = $stmt->get_result()->fetch_assoc()['total'];
-        $stmt->close();
+            $stmtEstado = $conexion->prepare("SELECT estado, COUNT(*) as cantidad FROM citas WHERE fecha_cita >= ? AND fecha_cita < ? GROUP BY estado");
+            $stmtEstado->bind_param("ss", $start, $end);
+            $stmtEstado->execute();
+            $resultado = $stmtEstado->get_result();
+        } else {
+            $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
+            
+            $stmtTotal = $conexion->prepare("SELECT COUNT(*) as total FROM citas WHERE DATE(fecha_cita) = ?");
+            $stmtTotal->bind_param("s", $fecha);
+            $stmtTotal->execute();
+            $stats['total'] = $stmtTotal->get_result()->fetch_assoc()['total'];
+            $stmtTotal->close();
 
-        // Por estado
-        $stmt = $conexion->prepare("SELECT estado, COUNT(*) as cantidad FROM citas WHERE DATE(fecha_cita) = ? GROUP BY estado");
-        $stmt->bind_param("s", $fecha);
-        $stmt->execute();
-        $resultado = $stmt->get_result();
+            $stmtEstado = $conexion->prepare("SELECT estado, COUNT(*) as cantidad FROM citas WHERE DATE(fecha_cita) = ? GROUP BY estado");
+            $stmtEstado->bind_param("s", $fecha);
+            $stmtEstado->execute();
+            $resultado = $stmtEstado->get_result();
+        }
+
         $stats['por_estado'] = [];
         while ($fila = $resultado->fetch_assoc()) {
             $stats['por_estado'][$fila['estado']] = intval($fila['cantidad']);
         }
-        $stmt->close();
+        if (isset($stmtEstado)) $stmtEstado->close();
 
         header('Content-Type: application/json');
         echo json_encode($stats);
