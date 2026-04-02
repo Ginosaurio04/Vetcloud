@@ -714,10 +714,17 @@
             document.getElementById('form-accion').value = 'crear';
             document.getElementById('formCita').reset();
             
-            // Sugerir la fecha actual o centro de la vista actual del calendario
+            // Sugerir la fecha y hora actuales en el input
             const today = new Date();
             today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
-            document.getElementById('inp-fecha').value = today.toISOString().slice(0, 16);
+            const hoyISO = today.toISOString().slice(0, 16);
+            
+            // La fecha mínima es hoy desde las 00:00
+            const minDate = today.toISOString().slice(0, 10) + 'T00:00';
+            
+            const inpFecha = document.getElementById('inp-fecha');
+            inpFecha.value = hoyISO;
+            inpFecha.min = minDate;
             
             document.getElementById('modalCita').classList.add('active');
         }
@@ -782,9 +789,15 @@
                 'cita_creada': '✅ Cita registrada exitosamente',
                 'estado_actualizado': '✅ Estado actualizado',
                 'cita_editada': '✅ Cita modificada',
-                'cita_eliminada': '✅ Cita eliminada'
+                'cita_eliminada': '✅ Cita eliminada',
+                'error_fecha_pasada': '❌ La fecha no puede ser en el pasado'
             };
             mostrarToast(msgs[params.get('msg')] || '✅ Acción completada');
+            
+            if (params.get('msg') === 'error_fecha_pasada') {
+                document.getElementById('toast').style.background = 'var(--danger)';
+            }
+            
             window.history.replaceState({}, '', 'agenda.html');
         }
     </script>

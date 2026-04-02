@@ -18,6 +18,15 @@ switch ($accion) {
             $nro_box = !empty($_POST['nro_box']) ? intval($_POST['nro_box']) : null;
             $observaciones = trim($_POST['observaciones']);
 
+            // Validar que la cita no sea de un día anterior al actual
+            $fecha_cita_date = date('Y-m-d', strtotime($fecha_cita));
+            $fecha_actual_date = date('Y-m-d');
+            
+            if ($fecha_cita_date < $fecha_actual_date) { 
+                header("Location: agenda.html?msg=error_fecha_pasada");
+                exit();
+            }
+
             $stmt = $conexion->prepare("INSERT INTO citas (id_mascota, fecha_cita, tipo_servicio, nro_box, estado, observaciones) VALUES (?, ?, ?, ?, 'En Espera', ?)");
             $stmt->bind_param("issis", $id_mascota, $fecha_cita, $tipo_servicio, $nro_box, $observaciones);
 

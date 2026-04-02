@@ -5,146 +5,94 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VetCloud - Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-    <link href="./css/main.css?v=3" rel="stylesheet">
+    <link href="./css/auth.css" rel="stylesheet">
 </head>
 
 <body>
-    <div class="v21_2">
-        <div class="v21_3">
-            <!-- Left Panel - Branding -->
-            <div class="v21_4">
-                <div class="v21_5">
-                    <div class="v21_6"></div>
+    <div class="auth-container">
+        <!-- Left Panel: Branding -->
+        <div class="auth-brand">
+            <div class="brand-pattern"></div>
+            <div class="brand-content">
+                <div class="brand-logo">
+                    <!-- Icon SVG placeholder -->
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
+                        <path d="M10 8c-1.11 0-2 .89-2 2s.89 2 2 2 2-.89 2-2-.89-2-2-2z"></path>
+                        <path d="M14 8c-1.11 0-2 .89-2 2s.89 2 2 2 2-.89 2-2-.89-2-2-2z"></path>
+                        <path d="M12 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"></path>
+                    </svg>
+                    VetCloud
                 </div>
-                <div class="v21_7">
-                    <div class="v21_8">
-                        <div class="v21_9">
-                            <div class="v21_10"></div>
-                        </div>
-                        <div class="v21_11">
-                            <span class="v21_12">VetCloud</span>
-                        </div>
-                    </div>
-                    <div class="v21_13">
-                        <div class="v21_14">
-                            <span class="v21_15">Cuídalos, <br>Gestiónalos con nosotros.</span>
-                        </div>
-                        <div class="v21_16">
-                            <span class="v21_17">La plataforma de gestión integral para clínicas veterinarias y
-                                servicios profesionales de peluquería canina.</span>
-                        </div>
-                    </div>
-                    <div class="v21_18">
-                        <div class="v21_19"></div>
-                        <div class="v21_20"></div>
-                        <div class="v21_21"></div>
-                    </div>
-                </div>
+                <h2 class="brand-title">Cuídalos,<br>Gestiónalos<br>con nosotros.</h2>
+                <p class="brand-desc">La plataforma de gestión integral para clínicas veterinarias y servicios profesionales de peluquería canina. Empieza a optimizar tu tiempo hoy mismo.</p>
             </div>
+        </div>
 
-            <!-- Right Panel - Login Form -->
-            <div class="v21_22">
-                <div class="v21_23">
-                    <!-- Header -->
-                    <div class="v21_24">
-                        <div class="v21_25"><span class="v21_26">Bienvenido de nuevo</span></div>
-                        <div class="v21_27"><span class="v21_28">Ingrese sus datos para iniciar sesión en su
-                                cuenta.</span></div>
-                    </div>
-
-                    <form action="validacion_login.php" method="POST">
-                        <!-- Fields -->
-                        <div class="v21_29">
-                            <div class="v21_30">
-                                <!-- Username -->
-                                <div class="v21_31">
-                                    <div class="v21_32"><span class="v21_33">Nombre de Usuario</span></div>
-                                    <div class="v21_34">
-                                        <div class="v21_35">
-                                            <input type="text" name="username" class="v21_37" placeholder="usuario123"
-                                                required>
-                                        </div>
-                                        <div class="v21_38">
-                                            <div class="v21_39"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Password -->
-                                <div class="v21_40">
-                                    <div class="v21_41"><span class="v21_42">Contraseña</span></div>
-                                    <div class="v21_43">
-                                        <div class="v21_44">
-                                            <input type="password" name="password" class="v21_46" placeholder="••••••••"
-                                                required>
-                                        </div>
-                                        <div class="v21_47">
-                                            <div class="v21_48"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Remember me / Forgot password -->
-                            <div class="v21_52">
-                                <div class="v21_53">
-                                    <div class="v21_54"></div>
-                                    <div class="v21_55"><span class="v21_56">Recuérdame</span></div>
-                                </div>
-                                <div class="v21_57"><span class="v21_58">¿Has olvidado tu contraseña?</span></div>
-                            </div>
-
-                            <!-- Actions -->
-                            <div class="v21_59">
-                                <button class="v21_60" type="submit">
-                                    <div class="v21_61"></div>
-                                    <span class="v21_62">Sign In</span>
-                                </button>
-
-                                <!-- Separator -->
-                                <div class="v21_63">
-                                    <div class="v21_64"></div>
-                                    <div class="v21_65"><span class="v21_66">o continuar con</span></div>
-                                    <div class="v21_67"></div>
-                                </div>
-
-                                <!-- Social buttons -->
-                                <div class="v21_68">
-                                    <div class="v21_69">
-                                        <div class="v21_70">
-                                            <div class="v21_71"></div>
-                                            <div class="v21_72"></div>
-                                            <div class="v21_73"></div>
-                                            <div class="v21_74"></div>
-                                        </div>
-                                        <span class="v21_75">Google</span>
-                                    </div>
-                                    <div class="v21_76">
-                                        <div class="v21_77">
-                                            <div class="v21_78"></div>
-                                        </div>
-                                        <span class="v21_79">Facebook</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-
-                    <!-- Link to register -->
-                    <div class="v21_80">
-                        <span class="v21_81">¿Eres nuevo en VetCloud?
-                            <a href="registro.html">Crea una cuenta.</a>
-                        </span>
-                    </div>
+        <!-- Right Panel: Form -->
+        <div class="auth-content">
+            <div class="auth-form-wrapper">
+                <div class="mobile-logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
+                    </svg>
+                    VetCloud
+                </div>
+                
+                <div class="auth-header">
+                    <h1>Bienvenido de nuevo</h1>
+                    <p>Ingrese sus datos para iniciar sesión en su cuenta.</p>
                 </div>
 
-                <!-- Footer -->
-                <div class="v21_82">
-                    <div class="v21_83">
-                        <div class="v21_84"><span class="v21_85">política de privacidad</span></div>
-                        <div class="v21_86"><span class="v21_87">Términos de servicio</span></div>
-                        <div class="v21_88"><span class="v21_89">Apoyo</span></div>
+                <form action="validacion_login.php" method="POST">
+                    <div class="form-group">
+                        <label class="form-label">Nombre de Usuario</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </span>
+                            <input type="text" name="username" class="form-input" placeholder="Ej: vetadmin" required>
+                        </div>
                     </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Contraseña</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            </span>
+                            <input type="password" name="password" class="form-input" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <div class="form-extras">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Recuérdame</label>
+                        </div>
+                        <a href="#" class="text-link">¿Olvidaste tu contraseña?</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Iniciar Sesión</button>
+                </form>
+
+                <div class="auth-separator">
+                    <span>o continuar con</span>
+                </div>
+
+                <div class="social-login">
+                    <button type="button" class="btn-social">
+                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="20" height="20" alt="Google">
+                        Google
+                    </button>
+                    <button type="button" class="btn-social">
+                        <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" width="20" height="20" alt="Facebook">
+                        Facebook
+                    </button>
+                </div>
+
+                <div class="auth-switch">
+                    ¿Eres nuevo en VetCloud? <a href="registro.html" class="text-link">Crea una cuenta</a>
                 </div>
             </div>
         </div>
