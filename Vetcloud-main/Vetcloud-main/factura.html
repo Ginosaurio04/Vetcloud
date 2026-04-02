@@ -685,10 +685,13 @@
                             'Peluquería': 'background:#f3e8ff;color:#6b21a8;',
                             'Cirugía': 'background:#fef3c7;color:#92400e;'
                         };
-                        const statusColors = { 'En Espera': 'var(--warning)', 'En Consulta': 'var(--primary)', 'En Peluquería': '#7c3aed', 'Finalizado': 'var(--success)', 'Cancelado': 'var(--danger)' };
+                        const statusColors = { 'En Espera': 'var(--warning)', 'En Consulta': 'var(--primary)', 'En Peluquería': '#7c3aed', 'Finalizado': 'var(--success)', 'Cancelado': 'var(--danger)', 'Facturado': '#0f766e' };
                         const dotColor = statusColors[c.estado] || 'var(--text-muted)';
+                        const isFacturado = c.estado === 'Facturado';
+                        const opacity = isFacturado ? '0.5' : '1';
+                        const pointerEvents = isFacturado ? 'none' : 'auto';
 
-                        return `<div class="visit-item" data-idx="${i}" onclick="seleccionarVisita(${i})">
+                        return `<div class="visit-item" data-idx="${i}" onclick="${isFacturado ? '' : `seleccionarVisita(${i})`}" style="opacity: ${opacity}; pointer-events: ${pointerEvents};">
                             <div class="visit-meta">
                                 <span class="visit-tag" style="${tagStyles[c.tipo_servicio] || ''}">${c.tipo_servicio}</span>
                                 <small style="color:var(--text-muted)">${hora}</small>
@@ -870,6 +873,11 @@
             form.action = 'factura_post.php';
             form.innerHTML = `<input type="hidden" name="accion" value="crear">`;
             form.innerHTML += `<input type="hidden" name="id_cliente" value="${clienteId}">`;
+            
+            if (selectedCita) {
+                form.innerHTML += `<input type="hidden" name="id_cita" value="${selectedCita.id_cita}">`;
+            }
+
             form.innerHTML += `<input type="hidden" name="metodo_pago" value="${document.getElementById('sel-metodo').value}">`;
 
             items.forEach((item, i) => {
@@ -878,6 +886,12 @@
                 form.innerHTML += `<input type="hidden" name="items[${i}][cantidad]" value="${item.cantidad}">`;
                 form.innerHTML += `<input type="hidden" name="items[${i}][precio_unitario]" value="${item.precio_unitario}">`;
             });
+
+            // Evitar múltiples clicks
+            const btnPrimary = document.querySelector('.btn-primary');
+            btnPrimary.disabled = true;
+            btnPrimary.style.opacity = '0.7';
+            btnPrimary.innerHTML = '<span class="material-symbols-outlined" style="font-size: 18px; animation: spin 1s linear infinite;">autorenew</span> Procesando...';
 
             document.body.appendChild(form);
             form.submit();
@@ -950,9 +964,16 @@
             const msgs = {
                 'factura_creada': '✅ Factura creada exitosamente',
                 'factura_eliminada': '✅ Factura eliminada',
-                'item_agregado': '✅ Ítem agregado'
+                'item_agregado': '✅ Ítem agregado',
+                'error_cita_facturada': '❌ La cita ya se encuentra facturada'
             };
             mostrarToast(msgs[params.get('msg')] || '✅ Acción completada');
+            
+            // Si hay error, aplicar estilo de error al toast
+            if (params.get('msg') === 'error_cita_facturada') {
+                document.getElementById('toast').style.background = 'var(--danger)';
+            }
+            
             window.history.replaceState({}, '', 'factura.html');
         }
 

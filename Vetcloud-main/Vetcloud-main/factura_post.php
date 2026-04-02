@@ -14,6 +14,22 @@ switch ($accion) {
             $id_cliente = intval($_POST['id_cliente']);
             $metodo_pago = $_POST['metodo_pago'];
 
+            // Evitar facturar la misma cita 2 veces
+            if (isset($_POST['id_cita']) && !empty($_POST['id_cita'])) {
+                $id_cita = intval($_POST['id_cita']);
+                $stmt_check = $conexion->prepare("SELECT estado FROM citas WHERE id_cita = ?");
+                $stmt_check->bind_param("i", $id_cita);
+                $stmt_check->execute();
+                $resultado_check = $stmt_check->get_result();
+                if ($fila = $resultado_check->fetch_assoc()) {
+                    if ($fila['estado'] === 'Facturado') {
+                        header("Location: factura.html?msg=error_cita_facturada");
+                        exit();
+                    }
+                }
+                $stmt_check->close();
+            }
+
             // Crear la factura con total 0, se actualizará con los detalles
             $stmt = $conexion->prepare("INSERT INTO facturas (id_cliente, metodo_pago, total_pagar) VALUES (?, ?, 0.00)");
             $stmt->bind_param("is", $id_cliente, $metodo_pago);
@@ -54,6 +70,17 @@ switch ($accion) {
                     $stmt_total->bind_param("di", $total, $id_factura);
                     $stmt_total->execute();
                     $stmt_total->close();
+                }
+
+                // Si viene de una cita, actualizamos su estado
+                if (isset($_POST['id_cita']) && !empty($_POST['id_cita'])) {
+                    $id_cita = intval($_POST['id_cita']);
+                    $stmt_cita = $conexion->prepare("UPDATE citas SET estado = 'Facturado' WHERE id_cita = ?");
+                    if ($stmt_cita) {
+                        $stmt_cita->bind_param("i", $id_cita);
+                        $stmt_cita->execute();
+                        $stmt_cita->close();
+                    }
                 }
 
                 header("Location: factura.html?msg=factura_creada&id=" . $id_factura);
