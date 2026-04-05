@@ -551,10 +551,6 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Número de Box (opcional)</label>
-                    <input type="number" name="nro_box" id="inp-box" placeholder="Ej: 3">
-                </div>
 
                 <div class="form-group">
                     <label>Observaciones</label>
@@ -581,7 +577,6 @@
                 <p style="margin: 4px 0;"><strong>Dueño:</strong> <span id="det-dueno"></span></p>
                 <p style="margin: 4px 0;"><strong>Teléfono:</strong> <span id="det-tel"></span></p>
                 <p style="margin: 4px 0;"><strong>Tipo de Servicio:</strong> <span id="det-tipo"></span></p>
-                <p style="margin: 4px 0;"><strong>Box:</strong> <span id="det-box"></span></p>
                 <p style="margin: 4px 0;"><strong>Observaciones:</strong> <span id="det-obs"></span></p>
             </div>
             <form action="agenda_post.php" method="POST">
@@ -739,7 +734,6 @@
             document.getElementById('det-dueno').textContent = data.dueno;
             document.getElementById('det-tel').textContent = data.telefono || 'No registrado';
             document.getElementById('det-tipo').textContent = data.tipo_servicio;
-            document.getElementById('det-box').textContent = data.nro_box || '—';
             document.getElementById('det-obs').textContent = data.observaciones || '—';
             
             const badge = document.getElementById('det-badge');

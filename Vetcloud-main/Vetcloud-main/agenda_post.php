@@ -15,7 +15,6 @@ switch ($accion) {
             $id_mascota = intval($_POST['id_mascota']);
             $fecha_cita = $_POST['fecha_cita'];
             $tipo_servicio = $_POST['tipo_servicio'];
-            $nro_box = !empty($_POST['nro_box']) ? intval($_POST['nro_box']) : null;
             $observaciones = trim($_POST['observaciones']);
 
             // Validar que la cita no sea de un día anterior al actual
@@ -27,8 +26,8 @@ switch ($accion) {
                 exit();
             }
 
-            $stmt = $conexion->prepare("INSERT INTO citas (id_mascota, fecha_cita, tipo_servicio, nro_box, estado, observaciones) VALUES (?, ?, ?, ?, 'En Espera', ?)");
-            $stmt->bind_param("issis", $id_mascota, $fecha_cita, $tipo_servicio, $nro_box, $observaciones);
+            $stmt = $conexion->prepare("INSERT INTO citas (id_mascota, fecha_cita, tipo_servicio, estado, observaciones) VALUES (?, ?, ?, 'En Espera', ?)");
+            $stmt->bind_param("isss", $id_mascota, $fecha_cita, $tipo_servicio, $observaciones);
 
             if ($stmt->execute()) {
                 header("Location: agenda.html?msg=cita_creada");
@@ -48,7 +47,7 @@ switch ($accion) {
             $start = $_GET['start'];
             $end = $_GET['end'];
             $stmt = $conexion->prepare("
-                SELECT c.id_cita, c.fecha_cita, c.tipo_servicio, c.nro_box, c.estado, c.observaciones,
+                SELECT c.id_cita, c.fecha_cita, c.tipo_servicio, c.estado, c.observaciones,
                        m.nombre_animal, m.especie, m.raza,
                        cl.nombre_completo AS dueno, cl.telefono
                 FROM citas c
@@ -61,7 +60,7 @@ switch ($accion) {
         } else {
             $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
             $stmt = $conexion->prepare("
-                SELECT c.id_cita, c.fecha_cita, c.tipo_servicio, c.nro_box, c.estado, c.observaciones,
+                SELECT c.id_cita, c.fecha_cita, c.tipo_servicio, c.estado, c.observaciones,
                        m.nombre_animal, m.especie, m.raza,
                        cl.nombre_completo AS dueno, cl.telefono
                 FROM citas c
@@ -120,11 +119,10 @@ switch ($accion) {
             $id_cita = intval($_POST['id_cita']);
             $fecha_cita = $_POST['fecha_cita'];
             $tipo_servicio = $_POST['tipo_servicio'];
-            $nro_box = !empty($_POST['nro_box']) ? intval($_POST['nro_box']) : null;
             $observaciones = trim($_POST['observaciones']);
 
-            $stmt = $conexion->prepare("UPDATE citas SET fecha_cita = ?, tipo_servicio = ?, nro_box = ?, observaciones = ? WHERE id_cita = ?");
-            $stmt->bind_param("ssisi", $fecha_cita, $tipo_servicio, $nro_box, $observaciones, $id_cita);
+            $stmt = $conexion->prepare("UPDATE citas SET fecha_cita = ?, tipo_servicio = ?, observaciones = ? WHERE id_cita = ?");
+            $stmt->bind_param("sssi", $fecha_cita, $tipo_servicio, $observaciones, $id_cita);
 
             if ($stmt->execute()) {
                 header("Location: agenda.html?msg=cita_editada");
