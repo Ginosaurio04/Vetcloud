@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetCloud - Clientes y Mascotas</title>
+    <meta name="description" content="Gestión de clientes y sus mascotas en VetCloud - Sistema veterinario">
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #eef2ff;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* --- Navbar --- */
+        nav {
+            height: 65px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-links li {
+            list-style: none;
+        }
+
+        .nav-links a {
+            display: block;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .nav-links li.active a {
+            color: var(--primary);
+            background: var(--primary-light);
+            font-weight: 600;
+        }
+
+        /* --- Main --- */
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .btn-add {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .btn-add:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: block;
+            margin-top: 4px;
+        }
+
+        /* Search */
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-input-wrapper .material-symbols-outlined {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 20px;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 11px 14px 11px 44px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            transition: 0.2s;
+            background: var(--white);
+        }
+
+        .search-input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* Clients Grid */
+        .clientes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .cliente-card {
+            background: var(--white);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            padding: 22px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: 0.25s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cliente-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), #818cf8);
+            opacity: 0;
+            transition: 0.25s;
+        }
+
+        .cliente-card:hover {
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.12);
+            transform: translateY(-3px);
+            border-color: rgba(79, 70, 229, 0.3);
+        }
+
+        .cliente-card:hover::before {
+            opacity: 1;
+        }
+
+        .cliente-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .cliente-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), #818cf8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .cliente-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: 0.2s;
+        }
+
+        .cliente-card:hover .cliente-actions {
+            opacity: 1;
+        }
+
+        .action-btn-sm {
+            background: var(--bg-body);
+            border: none;
+            padding: 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .action-btn-sm:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .action-btn-sm.danger:hover {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .action-btn-sm .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        .cliente-info h3 {
+            margin: 0 0 4px;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .cliente-info .cedula {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .cliente-details {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .cliente-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+        }
+
+        .cliente-detail .material-symbols-outlined {
+            font-size: 16px;
+            color: var(--primary);
+        }
+
+        .mascotas-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .mascotas-count .material-symbols-outlined {
+            font-size: 14px;
+        }
+
+        /* Panel de mascotas */
+        .mascotas-panel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 200;
+            justify-content: flex-end;
+        }
+
+        .mascotas-panel-overlay.active {
+            display: flex;
+        }
+
+        .mascotas-panel {
+            background: var(--white);
+            width: 520px;
+            max-width: 90vw;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15);
+            animation: slideInPanel 0.3s ease;
+        }
+
+        @keyframes slideInPanel {
+            from {
+                transform: translateX(100%);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .panel-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            z-index: 10;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1.15rem;
+        }
+
+        .panel-close {
+            background: var(--bg-body);
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .panel-close:hover {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .panel-client-info {
+            padding: 20px 24px;
+            background: var(--bg-body);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-client-info h3 {
+            margin: 0 0 6px;
+            font-size: 1rem;
+        }
+
+        .panel-client-info p {
+            margin: 2px 0;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .panel-body {
+            padding: 24px;
+        }
+
+        .panel-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .panel-section-header h3 {
+            margin: 0;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .panel-section-header h3 .material-symbols-outlined {
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .btn-add-sm {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 7px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.78rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+
+        .btn-add-sm:hover {
+            background: #4338ca;
+        }
+
+        .btn-add-sm .material-symbols-outlined {
+            font-size: 16px;
+        }
+
+        /* Mascota Card */
+        .mascota-card {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            transition: 0.2s;
+        }
+
+        .mascota-card:hover {
+            border-color: rgba(79, 70, 229, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .mascota-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .mascota-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .mascota-icon.perro {
+            background: #fef3c7;
+        }
+
+        .mascota-icon.gato {
+            background: #f3e8ff;
+        }
+
+        .mascota-icon.ave {
+            background: #e0f2fe;
+        }
+
+        .mascota-icon.otro {
+            background: #dcfce7;
+        }
+
+        .mascota-info h4 {
+            margin: 0 0 3px;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .mascota-info .especie-raza {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        .mascota-details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .mascota-detail {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .mascota-detail .material-symbols-outlined {
+            font-size: 14px;
+            color: var(--primary);
+        }
+
+        .mascota-notas {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border);
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .mascota-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .empty-mascotas {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-mascotas .material-symbols-outlined {
+            font-size: 48px;
+            color: var(--border);
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 300;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 30px;
+            width: 520px;
+            max-width: 90vw;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            animation: fadeInModal 0.25s ease;
+        }
+
+        @keyframes fadeInModal {
+            from {
+                transform: translateY(20px) scale(0.97);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal h2 {
+            margin: 0 0 20px;
+            font-size: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .btn-cancel {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            border: none;
+            color: white;
+        }
+
+        .btn-submit:hover {
+            background: #4338ca;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #065f46;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 400;
+            display: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .material-symbols-outlined {
+            font-size: 64px;
+            color: var(--border);
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 8px;
+            color: var(--text-main);
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .clientes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .mascotas-panel {
+                width: 100vw;
+            }
+        }
+        /* Inline pet cards in modal */
+        .mascota-inline-card {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 10px;
+            position: relative;
+            animation: fadeInModal 0.2s ease;
+        }
+
+        .mascota-inline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .mascota-inline-header span {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-remove-mascota {
+            background: none;
+            border: none;
+            color: #cbd5e1;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-remove-mascota:hover {
+            color: var(--danger);
+            background: #fee2e2;
+        }
+
+        .mascota-inline-card .form-group {
+            margin-bottom: 10px;
+        }
+
+        .mascota-inline-card .form-group label {
+            font-size: 0.7rem;
+            margin-bottom: 4px;
+        }
+
+        .mascota-inline-card .form-group input,
+        .mascota-inline-card .form-group select {
+            padding: 8px 10px;
+            font-size: 0.82rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-left">
+            <div class="logo">
+                <span class="material-symbols-outlined">pets</span> VetCloud
+            </div>
+            <ul class="nav-links">
+                <li><a href="menu.html">Dashboard</a></li>
+                <li><a href="agenda.html">Agenda</a></li>
+                <li class="active"><a href="clientes.html">Clientes</a></li>
+                <li><a href="inventario.html">Inventario</a></li>
+                <li><a href="factura.html">Facturación</a></li>
+            </ul>
+        </div>
+        <div class="nav-right" style="display: flex; align-items: center; gap: 15px;">
+            <span class="material-symbols-outlined"
+                style="color: var(--text-muted); cursor: pointer;">notifications</span>
+            <div style="width: 35px; height: 35px; background: #ddd; border-radius: 50%;"></div>
+        </div>
+    </nav>
+
+    <main>
+        <header class="header-section">
+            <div>
+                <h1 style="margin:0; font-size: 1.5rem; font-weight: 700;">Clientes y Mascotas</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Gestión de propietarios y sus mascotas registradas.</p>
+            </div>
+            <button class="btn-add" onclick="abrirModalCliente()">
+                <span class="material-symbols-outlined" style="font-size: 18px;">person_add</span> Nuevo Cliente
+            </button>
+        </header>
+
+        <!-- Stats -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Total Clientes</span>
+                <span class="stat-value" id="stat-clientes">—</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Total Mascotas</span>
+                <span class="stat-value" id="stat-mascotas" style="color: var(--primary);">—</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Especies Registradas</span>
+                <span class="stat-value" id="stat-especies" style="color: var(--warning);">—</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Nuevos (Último Mes)</span>
+                <span class="stat-value" id="stat-nuevos" style="color: var(--success);">—</span>
+            </div>
+        </section>
+
+        <!-- Search -->
+        <div class="search-bar">
+            <div class="search-input-wrapper">
+                <span class="material-symbols-outlined">search</span>
+                <input type="text" id="buscarCliente" placeholder="Buscar por nombre, cédula o correo..." oninput="buscarClientes()">
+            </div>
+        </div>
+
+        <!-- Clients Grid -->
+        <div class="clientes-grid" id="clientesGrid">
+            <div class="empty-state" style="grid-column: 1 / -1;">
+                <span class="material-symbols-outlined">hourglass_empty</span>
+                <h3>Cargando clientes...</h3>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Cliente + Mascotas -->
+    <div class="modal-overlay" id="modalCliente">
+        <div class="modal" style="width: 640px;">
+            <h2 id="modalClienteTitulo">Nuevo Cliente</h2>
+            <form id="formCliente" onsubmit="enviarFormularioCliente(event)">
+                <input type="hidden" id="clienteAccion" value="crear_cliente">
+                <input type="hidden" id="clienteId">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cédula</label>
+                        <input type="text" id="inp-cedula" required placeholder="V-12345678">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="inp-nombre" required placeholder="Nombre y Apellido">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="text" id="inp-telefono" placeholder="0412-1234567">
+                    </div>
+                    <div class="form-group">
+                        <label>Correo Electrónico</label>
+                        <input type="email" id="inp-email" placeholder="correo@ejemplo.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <textarea id="inp-direccion" placeholder="Dirección completa del cliente..." style="min-height: 60px;"></textarea>
+                </div>
+
+                <!-- Sección de mascotas inline -->
+                <div id="seccionMascotas" style="margin-top: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-top: 16px; border-top: 2px solid var(--border);">
+                        <label style="display: flex; align-items: center; gap: 6px; margin: 0; font-size: 0.85rem; font-weight: 700; color: var(--text-main); text-transform: none; letter-spacing: 0;">
+                            <span class="material-symbols-outlined" style="font-size: 20px; color: var(--primary);">pets</span>
+                            Mascotas del Cliente
+                        </label>
+                        <button type="button" class="btn-add-sm" onclick="agregarMascotaInline()">
+                            <span class="material-symbols-outlined">add</span> Agregar Mascota
+                        </button>
+                    </div>
+                    <div id="mascotasInlineList">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                    <div id="sinMascotasMsg" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.82rem; background: var(--bg-body); border-radius: 10px; border: 1px dashed var(--border);">
+                        <span class="material-symbols-outlined" style="font-size: 28px; color: var(--border); display: block; margin-bottom: 6px;">pets</span>
+                        Haz clic en "Agregar Mascota" para registrar las mascotas del cliente.
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="cerrarModalCliente()">Cancelar</button>
+                    <button type="submit" class="btn-submit">Guardar Cliente y Mascotas</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Mascota -->
+    <div class="modal-overlay" id="modalMascota">
+        <div class="modal">
+            <h2 id="modalMascotaTitulo">Nueva Mascota</h2>
+            <form id="formMascota" action="clientes_post.php" method="POST">
+                <input type="hidden" name="accion" id="mascotaAccion" value="crear_mascota">
+                <input type="hidden" name="id_mascota" id="mascotaId">
+                <input type="hidden" name="id_cliente" id="mascotaClienteId">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre de la Mascota</label>
+                        <input type="text" name="nombre_animal" id="inp-m-nombre" required placeholder="Nombre de la mascota">
+                    </div>
+                    <div class="form-group">
+                        <label>Especie</label>
+                        <select name="especie" id="inp-m-especie" required>
+                            <option value="">— Seleccione —</option>
+                            <option value="Perro">Perro</option>
+                            <option value="Gato">Gato</option>
+                            <option value="Ave">Ave</option>
+                            <option value="Reptil">Reptil</option>
+                            <option value="Roedor">Roedor</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>Raza</label>
+                        <input type="text" name="raza" id="inp-m-raza" placeholder="Labrador, Siamés...">
+                    </div>
+                    <div class="form-group">
+                        <label>Edad</label>
+                        <input type="text" name="edad" id="inp-m-edad" placeholder="2 años">
+                    </div>
+                    <div class="form-group">
+                        <label>Peso (kg)</label>
+                        <input type="number" step="0.1" name="peso" id="inp-m-peso" placeholder="5.5">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Sexo</label>
+                        <select name="sexo" id="inp-m-sexo">
+                            <option value="">— Seleccione —</option>
+                            <option value="Macho">Macho</option>
+                            <option value="Hembra">Hembra</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="text" name="color" id="inp-m-color" placeholder="Negro, Blanco...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Notas Médicas</label>
+                    <textarea name="notas_medicas" id="inp-m-notas" placeholder="Alergias, condiciones, tratamientos..."></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="cerrarModalMascota()">Cancelar</button>
+                    <button type="submit" class="btn-submit">Guardar Mascota</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Panel lateral de mascotas -->
+    <div class="mascotas-panel-overlay" id="panelMascotas">
+        <div class="mascotas-panel">
+            <div class="panel-header">
+                <h2>Mascotas del Cliente</h2>
+                <button class="panel-close" onclick="cerrarPanel()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="panel-client-info" id="panelClienteInfo">
+                <!-- Se llena dinámicamente -->
+            </div>
+            <div class="panel-body">
+                <div class="panel-section-header">
+                    <h3>
+                        <span class="material-symbols-outlined">pets</span>
+                        Mascotas Registradas
+                    </h3>
+                    <button class="btn-add-sm" id="btnAgregarMascota" onclick="abrirModalMascota()">
+                        <span class="material-symbols-outlined">add</span> Agregar
+                    </button>
+                </div>
+                <div id="listaMascotas">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let clienteActual = null;
+        let debounceTimer = null;
+        let mascotaInlineCount = 0;
+
+        // ===== Cargar estadísticas =====
+        function cargarEstadisticas() {
+            fetch('clientes_post.php?accion=estadisticas')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('stat-clientes').textContent = data.total_clientes;
+                    document.getElementById('stat-mascotas').textContent = data.total_mascotas;
+                    document.getElementById('stat-especies').textContent = data.total_especies;
+                    document.getElementById('stat-nuevos').textContent = data.nuevos_mes;
+                })
+                .catch(() => {
+                    document.getElementById('stat-clientes').textContent = '0';
+                    document.getElementById('stat-mascotas').textContent = '0';
+                    document.getElementById('stat-especies').textContent = '0';
+                    document.getElementById('stat-nuevos').textContent = '0';
+                });
+        }
+
+        // ===== Cargar clientes =====
+        function cargarClientes(buscar = '') {
+            fetch('clientes_post.php?accion=listar&buscar=' + encodeURIComponent(buscar))
+                .then(r => r.json())
+                .then(clientes => {
+                    const grid = document.getElementById('clientesGrid');
+                    if (!clientes || clientes.length === 0) {
+                        grid.innerHTML = `
+                            <div class="empty-state" style="grid-column: 1 / -1;">
+                                <span class="material-symbols-outlined">person_off</span>
+                                <h3>No se encontraron clientes</h3>
+                                <p>Registra un nuevo cliente para comenzar.</p>
+                            </div>`;
+                        return;
+                    }
+
+                    grid.innerHTML = clientes.map(c => {
+                        const initials = c.nombre_completo.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                        return `
+                        <div class="cliente-card" onclick="verMascotas(${c.id_cliente})">
+                            <div class="cliente-header">
+                                <div style="display: flex; gap: 14px; align-items: center;">
+                                    <div class="cliente-avatar">${initials}</div>
+                                    <div class="cliente-info">
+                                        <h3>${c.nombre_completo}</h3>
+                                        <span class="cedula">${c.cedula}</span>
+                                    </div>
+                                </div>
+                                <div class="cliente-actions">
+                                    <button class="action-btn-sm" onclick="event.stopPropagation(); editarCliente(${c.id_cliente})" title="Editar">
+                                        <span class="material-symbols-outlined">edit</span>
+                                    </button>
+                                    <button class="action-btn-sm danger" onclick="event.stopPropagation(); eliminarCliente(${c.id_cliente}, '${c.nombre_completo.replace(/'/g, "\\'")}')" title="Eliminar">
+                                        <span class="material-symbols-outlined">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="cliente-details">
+                                ${c.telefono ? `<div class="cliente-detail"><span class="material-symbols-outlined">call</span> ${c.telefono}</div>` : ''}
+                                ${c.email ? `<div class="cliente-detail"><span class="material-symbols-outlined">mail</span> ${c.email}</div>` : ''}
+                                ${c.direccion ? `<div class="cliente-detail"><span class="material-symbols-outlined">location_on</span> ${c.direccion}</div>` : ''}
+                            </div>
+                            <div class="mascotas-count">
+                                <span class="material-symbols-outlined">pets</span>
+                                ${c.total_mascotas} mascota${c.total_mascotas != 1 ? 's' : ''}
+                            </div>
+                        </div>`;
+                    }).join('');
+                })
+                .catch(() => {
+                    document.getElementById('clientesGrid').innerHTML = `
+                        <div class="empty-state" style="grid-column: 1 / -1;">
+                            <span class="material-symbols-outlined">error</span>
+                            <h3>Error al conectar</h3>
+                            <p>No se pudo cargar la lista de clientes.</p>
+                        </div>`;
+                });
+        }
+
+        // ===== Búsqueda con debounce =====
+        function buscarClientes() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                cargarClientes(document.getElementById('buscarCliente').value);
+            }, 300);
+        }
+
+        // ===== Inline Pet Forms =====
+        function agregarMascotaInline() {
+            mascotaInlineCount++;
+            const idx = mascotaInlineCount;
+            document.getElementById('sinMascotasMsg').style.display = 'none';
+
+            const div = document.createElement('div');
+            div.className = 'mascota-inline-card';
+            div.id = 'mascota-inline-' + idx;
+            div.innerHTML = `
+                <div class="mascota-inline-header">
+                    <span><span class="material-symbols-outlined" style="font-size: 16px;">pets</span> Mascota #${idx}</span>
+                    <button type="button" class="btn-remove-mascota" onclick="removerMascotaInline(${idx})">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
+                    </button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" data-mascota="${idx}" data-field="nombre_animal" required placeholder="Nombre de la mascota">
+                    </div>
+                    <div class="form-group">
+                        <label>Especie</label>
+                        <select data-mascota="${idx}" data-field="especie" required>
+                            <option value="">— Seleccione —</option>
+                            <option value="Perro">Perro</option>
+                            <option value="Gato">Gato</option>
+                            <option value="Ave">Ave</option>
+                            <option value="Reptil">Reptil</option>
+                            <option value="Roedor">Roedor</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label>Raza</label>
+                        <input type="text" data-mascota="${idx}" data-field="raza" placeholder="Labrador...">
+                    </div>
+                    <div class="form-group">
+                        <label>Edad</label>
+                        <input type="text" data-mascota="${idx}" data-field="edad" placeholder="2 años">
+                    </div>
+                    <div class="form-group">
+                        <label>Peso (kg)</label>
+                        <input type="number" step="0.1" data-mascota="${idx}" data-field="peso" placeholder="5.5">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Sexo</label>
+                        <select data-mascota="${idx}" data-field="sexo">
+                            <option value="">— Seleccione —</option>
+                            <option value="Macho">Macho</option>
+                            <option value="Hembra">Hembra</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="text" data-mascota="${idx}" data-field="color" placeholder="Negro, Blanco...">
+                    </div>
+                </div>
+            `;
+            document.getElementById('mascotasInlineList').appendChild(div);
+        }
+
+        function removerMascotaInline(idx) {
+            const el = document.getElementById('mascota-inline-' + idx);
+            if (el) el.remove();
+            // Show placeholder if no pets left
+            if (document.getElementById('mascotasInlineList').children.length === 0) {
+                document.getElementById('sinMascotasMsg').style.display = 'block';
+            }
+        }
+
+        function recogerMascotasInline() {
+            const mascotas = [];
+            const cards = document.querySelectorAll('.mascota-inline-card');
+            cards.forEach(card => {
+                const idx = card.id.replace('mascota-inline-', '');
+                const getVal = (field) => {
+                    const el = card.querySelector(`[data-mascota="${idx}"][data-field="${field}"]`);
+                    return el ? el.value.trim() : '';
+                };
+                const nombre = getVal('nombre_animal');
+                const especie = getVal('especie');
+                if (nombre && especie) {
+                    mascotas.push({
+                        nombre_animal: nombre,
+                        especie: especie,
+                        raza: getVal('raza'),
+                        edad: getVal('edad'),
+                        peso: getVal('peso'),
+                        sexo: getVal('sexo'),
+                        color: getVal('color'),
+                        notas_medicas: ''
+                    });
+                }
+            });
+            return mascotas;
+        }
+
+        // ===== Enviar formulario (cliente + mascotas por JSON) =====
+        function enviarFormularioCliente(e) {
+            e.preventDefault();
+            const accion = document.getElementById('clienteAccion').value;
+            const idCliente = document.getElementById('clienteId').value;
+
+            // Si es editar, enviar como form POST normal
+            if (accion === 'editar_cliente') {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'clientes_post.php';
+                form.innerHTML = `
+                    <input type="hidden" name="accion" value="editar_cliente">
+                    <input type="hidden" name="id_cliente" value="${idCliente}">
+                    <input type="hidden" name="cedula" value="${document.getElementById('inp-cedula').value}">
+                    <input type="hidden" name="nombre_completo" value="${document.getElementById('inp-nombre').value}">
+                    <input type="hidden" name="telefono" value="${document.getElementById('inp-telefono').value}">
+                    <input type="hidden" name="email" value="${document.getElementById('inp-email').value}">
+                    <input type="hidden" name="direccion" value="${document.getElementById('inp-direccion').value}">
+                `;
+                document.body.appendChild(form);
+                form.submit();
+                return;
+            }
+
+            // Crear cliente + mascotas via JSON
+            const data = {
+                accion: 'crear_cliente_con_mascotas',
+                cliente: {
+                    cedula: document.getElementById('inp-cedula').value,
+                    nombre_completo: document.getElementById('inp-nombre').value,
+                    telefono: document.getElementById('inp-telefono').value,
+                    email: document.getElementById('inp-email').value,
+                    direccion: document.getElementById('inp-direccion').value
+                },
+                mascotas: recogerMascotasInline()
+            };
+
+            // Validar que al menos los campos de mascota requeridos estén llenos
+            const cards = document.querySelectorAll('.mascota-inline-card');
+            for (const card of cards) {
+                const idx = card.id.replace('mascota-inline-', '');
+                const nombre = card.querySelector(`[data-mascota="${idx}"][data-field="nombre_animal"]`);
+                const especie = card.querySelector(`[data-mascota="${idx}"][data-field="especie"]`);
+                if (!nombre.value.trim() || !especie.value) {
+                    nombre.focus();
+                    mostrarToast('❌ Completa el nombre y especie de todas las mascotas', true);
+                    return;
+                }
+            }
+
+            fetch('clientes_post.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    window.location.href = 'clientes.html?msg=cliente_creado';
+                } else {
+                    mostrarToast('❌ ' + (res.error || 'Error al crear cliente'), true);
+                }
+            })
+            .catch(() => {
+                mostrarToast('❌ Error de conexión', true);
+            });
+        }
+
+        // ===== Modal Cliente =====
+        function abrirModalCliente() {
+            document.getElementById('modalClienteTitulo').textContent = 'Nuevo Cliente y Mascotas';
+            document.getElementById('clienteAccion').value = 'crear_cliente';
+            document.getElementById('formCliente').reset();
+            document.getElementById('clienteId').value = '';
+            // Limpiar mascotas inline
+            document.getElementById('mascotasInlineList').innerHTML = '';
+            document.getElementById('sinMascotasMsg').style.display = 'block';
+            document.getElementById('seccionMascotas').style.display = 'block';
+            mascotaInlineCount = 0;
+            document.getElementById('modalCliente').classList.add('active');
+        }
+
+        function cerrarModalCliente() {
+            document.getElementById('modalCliente').classList.remove('active');
+        }
+
+        function editarCliente(id) {
+            fetch('clientes_post.php?accion=obtener_cliente&id=' + id)
+                .then(r => r.json())
+                .then(c => {
+                    document.getElementById('modalClienteTitulo').textContent = 'Editar Cliente';
+                    document.getElementById('clienteAccion').value = 'editar_cliente';
+                    document.getElementById('clienteId').value = c.id_cliente;
+                    document.getElementById('inp-cedula').value = c.cedula;
+                    document.getElementById('inp-nombre').value = c.nombre_completo;
+                    document.getElementById('inp-telefono').value = c.telefono || '';
+                    document.getElementById('inp-email').value = c.email || '';
+                    document.getElementById('inp-direccion').value = c.direccion || '';
+                    // Ocultar sección de mascotas en modo edición
+                    document.getElementById('seccionMascotas').style.display = 'none';
+                    document.getElementById('modalCliente').classList.add('active');
+                });
+        }
+
+        function eliminarCliente(id, nombre) {
+            if (!confirm(`¿Seguro que desea eliminar al cliente "${nombre}"?\n\nNota: No podrá eliminarse si tiene mascotas registradas.`)) return;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'clientes_post.php';
+            form.innerHTML = `<input type="hidden" name="accion" value="eliminar_cliente"><input type="hidden" name="id_cliente" value="${id}">`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // ===== Panel de Mascotas =====
+        function verMascotas(idCliente) {
+            fetch('clientes_post.php?accion=obtener_cliente&id=' + idCliente)
+                .then(r => r.json())
+                .then(cliente => {
+                    clienteActual = cliente;
+                    document.getElementById('panelClienteInfo').innerHTML = `
+                        <h3>${cliente.nombre_completo}</h3>
+                        <p>${cliente.cedula} • ${cliente.telefono || 'Sin teléfono'}</p>
+                        <p>${cliente.email || 'Sin correo'}</p>
+                    `;
+                    document.getElementById('mascotaClienteId').value = cliente.id_cliente;
+                    cargarMascotasPanel(idCliente);
+                    document.getElementById('panelMascotas').classList.add('active');
+                });
+        }
+
+        function cerrarPanel() {
+            document.getElementById('panelMascotas').classList.remove('active');
+            clienteActual = null;
+        }
+
+        function cargarMascotasPanel(idCliente) {
+            fetch('clientes_post.php?accion=listar_mascotas&id_cliente=' + idCliente)
+                .then(r => r.json())
+                .then(mascotas => {
+                    const container = document.getElementById('listaMascotas');
+                    if (!mascotas || mascotas.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-mascotas">
+                                <span class="material-symbols-outlined">pets</span>
+                                <p>Este cliente no tiene mascotas registradas.</p>
+                            </div>`;
+                        return;
+                    }
+
+                    container.innerHTML = mascotas.map(m => {
+                        const iconClass = {
+                            'Perro': 'perro', 'Gato': 'gato', 'Ave': 'ave'
+                        }[m.especie] || 'otro';
+                        const emoji = {
+                            'Perro': '🐕', 'Gato': '🐱', 'Ave': '🐦', 'Reptil': '🦎', 'Roedor': '🐹'
+                        }[m.especie] || '🐾';
+
+                        return `
+                        <div class="mascota-card">
+                            <div class="mascota-header">
+                                <div style="display: flex; gap: 12px; align-items: center;">
+                                    <div class="mascota-icon ${iconClass}">${emoji}</div>
+                                    <div class="mascota-info">
+                                        <h4>${m.nombre_animal}</h4>
+                                        <span class="especie-raza">${m.especie}${m.raza ? ' • ' + m.raza : ''}</span>
+                                    </div>
+                                </div>
+                                <div class="mascota-actions">
+                                    <button class="action-btn-sm" onclick="editarMascota(${m.id_mascota}, ${m.id_cliente})" title="Editar">
+                                        <span class="material-symbols-outlined">edit</span>
+                                    </button>
+                                    <button class="action-btn-sm danger" onclick="eliminarMascota(${m.id_mascota}, ${m.id_cliente}, '${m.nombre_animal.replace(/'/g, "\\'")}')" title="Eliminar">
+                                        <span class="material-symbols-outlined">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mascota-details-grid">
+                                ${m.edad ? `<div class="mascota-detail"><span class="material-symbols-outlined">cake</span> ${m.edad}</div>` : ''}
+                                ${m.peso ? `<div class="mascota-detail"><span class="material-symbols-outlined">monitor_weight</span> ${m.peso} kg</div>` : ''}
+                                ${m.sexo ? `<div class="mascota-detail"><span class="material-symbols-outlined">${m.sexo === 'Macho' ? 'male' : 'female'}</span> ${m.sexo}</div>` : ''}
+                                ${m.color ? `<div class="mascota-detail"><span class="material-symbols-outlined">palette</span> ${m.color}</div>` : ''}
+                            </div>
+                            ${m.notas_medicas ? `<div class="mascota-notas"><strong>Notas:</strong> ${m.notas_medicas}</div>` : ''}
+                        </div>`;
+                    }).join('');
+                })
+                .catch(() => {
+                    document.getElementById('listaMascotas').innerHTML = `
+                        <div class="empty-mascotas">
+                            <span class="material-symbols-outlined">error</span>
+                            <p>Error al cargar las mascotas.</p>
+                        </div>`;
+                });
+        }
+
+        // ===== Modal Mascota (para agregar desde panel) =====
+        function abrirModalMascota() {
+            document.getElementById('modalMascotaTitulo').textContent = 'Nueva Mascota';
+            document.getElementById('mascotaAccion').value = 'crear_mascota';
+            document.getElementById('formMascota').reset();
+            document.getElementById('mascotaId').value = '';
+            document.getElementById('mascotaClienteId').value = clienteActual.id_cliente;
+            document.getElementById('modalMascota').classList.add('active');
+        }
+
+        function cerrarModalMascota() {
+            document.getElementById('modalMascota').classList.remove('active');
+        }
+
+        function editarMascota(idMascota, idCliente) {
+            fetch('clientes_post.php?accion=listar_mascotas&id_cliente=' + idCliente)
+                .then(r => r.json())
+                .then(mascotas => {
+                    const m = mascotas.find(x => x.id_mascota == idMascota);
+                    if (!m) return;
+
+                    document.getElementById('modalMascotaTitulo').textContent = 'Editar Mascota';
+                    document.getElementById('mascotaAccion').value = 'editar_mascota';
+                    document.getElementById('mascotaId').value = m.id_mascota;
+                    document.getElementById('mascotaClienteId').value = idCliente;
+                    document.getElementById('inp-m-nombre').value = m.nombre_animal;
+                    document.getElementById('inp-m-especie').value = m.especie;
+                    document.getElementById('inp-m-raza').value = m.raza || '';
+                    document.getElementById('inp-m-edad').value = m.edad || '';
+                    document.getElementById('inp-m-peso').value = m.peso || '';
+                    document.getElementById('inp-m-sexo').value = m.sexo || '';
+                    document.getElementById('inp-m-color').value = m.color || '';
+                    document.getElementById('inp-m-notas').value = m.notas_medicas || '';
+                    document.getElementById('modalMascota').classList.add('active');
+                });
+        }
+
+        function eliminarMascota(idMascota, idCliente, nombre) {
+            if (!confirm(`¿Seguro que desea eliminar a "${nombre}"?\n\nNota: No podrá eliminarse si tiene citas registradas.`)) return;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'clientes_post.php';
+            form.innerHTML = `<input type="hidden" name="accion" value="eliminar_mascota"><input type="hidden" name="id_mascota" value="${idMascota}"><input type="hidden" name="id_cliente" value="${idCliente}">`;
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // ===== Cerrar modales con click afuera =====
+        document.getElementById('modalCliente').addEventListener('click', function (e) {
+            if (e.target === this) cerrarModalCliente();
+        });
+        document.getElementById('modalMascota').addEventListener('click', function (e) {
+            if (e.target === this) cerrarModalMascota();
+        });
+        document.getElementById('panelMascotas').addEventListener('click', function (e) {
+            if (e.target === this) cerrarPanel();
+        });
+
+        // ===== Toast =====
+        function mostrarToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast show' + (isError ? ' error' : '');
+            setTimeout(() => t.className = 'toast', 3500);
+        }
+
+        // ===== Mensajes de URL =====
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('msg')) {
+            const msgs = {
+                'cliente_creado': '✅ Cliente y mascotas registrados exitosamente',
+                'cliente_editado': '✅ Cliente actualizado',
+                'cliente_eliminado': '✅ Cliente eliminado',
+                'mascota_creada': '✅ Mascota registrada exitosamente',
+                'mascota_editada': '✅ Mascota actualizada',
+                'mascota_eliminada': '✅ Mascota eliminada',
+                'error_duplicado': '❌ Ya existe un cliente con esa cédula o correo',
+                'error_tiene_mascotas': '❌ No se puede eliminar: tiene mascotas registradas',
+                'error_mascota_citas': '❌ No se puede eliminar: la mascota tiene citas registradas',
+                'error_general': '❌ Ocurrió un error inesperado'
+            };
+            const isError = params.get('msg').startsWith('error');
+            mostrarToast(msgs[params.get('msg')] || '✅ Acción completada', isError);
+
+            if (params.get('ver')) {
+                setTimeout(() => verMascotas(parseInt(params.get('ver'))), 500);
+            }
+
+            window.history.replaceState({}, '', 'clientes.html');
+        }
+
+        // ===== Init =====
+        cargarEstadisticas();
+        cargarClientes();
+    </script>
+
+</body>
+
+</html>
