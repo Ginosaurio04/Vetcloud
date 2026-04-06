@@ -521,6 +521,40 @@
         <section class="citas-card">
             <div id="calendar"></div>
         </section>
+
+        <!-- Lista de citas en formato tabla -->
+        <section class="citas-list-section" style="margin-top: 40px; margin-bottom: 40px;">
+            <div class="header-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 1.2rem; font-weight: 700; margin: 0;">Lista de Citas</h2>
+            </div>
+            <div class="citas-card" style="padding: 0; overflow-x: auto;">
+                <div style="display: flex; border-bottom: 1px solid var(--border); background: #fcfcfd; padding: 0 20px;">
+                    <div class="tabList active" onclick="cambiarTabLista('activas', this)" style="padding: 16px 20px; cursor: pointer; color: var(--primary); font-size: 0.9rem; border-bottom: 2px solid var(--primary); font-weight: 600; transition: 0.2s;">
+                        Citas Activas
+                    </div>
+                    <div class="tabList" onclick="cambiarTabLista('historial', this)" style="padding: 16px 20px; cursor: pointer; color: var(--text-muted); font-size: 0.9rem; border-bottom: 2px solid transparent; transition: 0.2s;">
+                        Historial de Citas
+                    </div>
+                </div>
+                <table style="width: 100%; min-width: 700px; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc; padding: 14px 20px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border);">Fecha y Hora</th>
+                            <th style="background: #f8fafc; padding: 14px 20px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border);">Paciente / Dueño</th>
+                            <th style="background: #f8fafc; padding: 14px 20px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border);">Servicio</th>
+                            <th style="background: #f8fafc; padding: 14px 20px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border);">Estado</th>
+                            <th style="background: #f8fafc; padding: 14px 20px; text-align: center; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border);">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-citas-body">
+                        <!-- Citas will be injected here -->
+                    </tbody>
+                </table>
+                <div id="citas-empty-state" style="padding: 40px; text-align: center; color: var(--text-muted); display: none;">
+                    No hay citas registradas.
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Modal Nueva Cita -->
@@ -540,17 +574,22 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Fecha y Hora</label>
+                        <label>Inicio</label>
                         <input type="datetime-local" name="fecha_cita" id="inp-fecha" required>
                     </div>
                     <div class="form-group">
-                        <label>Tipo de Servicio</label>
-                        <select name="tipo_servicio" id="inp-tipo" required>
-                            <option value="Consulta Médica">Consulta Médica</option>
-                            <option value="Peluquería">Peluquería</option>
-                            <option value="Cirugía">Cirugía</option>
-                        </select>
+                        <label>Fin</label>
+                        <input type="datetime-local" name="fecha_fin" id="inp-fecha-fin" required>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Servicio</label>
+                    <select name="tipo_servicio" id="inp-tipo" required>
+                        <option value="Consulta Médica">Consulta Médica</option>
+                        <option value="Peluquería">Peluquería</option>
+                        <option value="Cirugía">Cirugía</option>
+                    </select>
                 </div>
 
 
@@ -621,8 +660,7 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                slotMinTime: '08:00:00',
-                slotMaxTime: '19:00:00',
+                scrollTime: '08:00:00',
                 allDaySlot: false,
                 buttonText: {
                     today: 'Hoy',
@@ -646,14 +684,15 @@
                                 else if (c.estado === 'Finalizado') bgColor = '#22c55e'; // green
                                 else if (c.estado === 'Cancelado') bgColor = '#ef4444'; // red
 
-                                const startObj = new Date(c.fecha_cita);
-                                const endObj = new Date(startObj.getTime() + 60 * 60 * 1000); // Duración base 1 hora
+                                const fecha_iso = c.fecha_cita.replace(' ', 'T');
+                                const fecha_fin_iso = c.fecha_fin.replace(' ', 'T');
 
                                 return {
                                     id: c.id_cita,
                                     title: c.nombre_animal + ' - ' + c.tipo_servicio,
-                                    start: startObj,
-                                    end: endObj,
+                                    start: fecha_iso,
+                                    end: fecha_fin_iso,
+                                    allDay: false,
                                     backgroundColor: bgColor,
                                     extendedProps: c
                                 };
@@ -672,6 +711,7 @@
 
             calendarObj.render();
             cargarMascotas();
+            cargarListaProximas();
         });
 
         // ===== Cargar estadísticas =====
@@ -711,17 +751,26 @@
             document.getElementById('form-accion').value = 'crear';
             document.getElementById('formCita').reset();
             
-            // Sugerir la fecha y hora actuales en el input
+            // Sugerir la fecha y hora actuales en el input de inicio
             const today = new Date();
             today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
             const hoyISO = today.toISOString().slice(0, 16);
+            
+            // Sugerir +1 hora para el fin
+            const endToday = new Date(today.getTime() + 60 * 60 * 1000);
+            const finISO = endToday.toISOString().slice(0, 16);
             
             // La fecha mínima es hoy desde las 00:00
             const minDate = today.toISOString().slice(0, 10) + 'T00:00';
             
             const inpFecha = document.getElementById('inp-fecha');
+            const inpFechaFin = document.getElementById('inp-fecha-fin');
+            
             inpFecha.value = hoyISO;
             inpFecha.min = minDate;
+            
+            inpFechaFin.value = finISO;
+            inpFechaFin.min = minDate;
             
             document.getElementById('modalCita').classList.add('active');
         }
@@ -755,16 +804,103 @@
             document.getElementById('modalEstado').classList.remove('active');
         }
 
-        // ===== Eliminar =====
+        // ===== Eliminar desde Modal =====
         function eliminarCitaDesdeModal() {
             const id = document.getElementById('estado-id').value;
             if (!confirm('¿Seguro que desea eliminar esta cita permanentemente?')) return;
+            eliminarCitaId(id);
+        }
+
+        // ===== Eliminar Directamente =====
+        function eliminarCita(id) {
+            if (!confirm('¿Seguro que desea eliminar esta cita de la agenda permanentemente?')) return;
+            eliminarCitaId(id);
+        }
+        
+        function eliminarCitaId(id) {
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = 'agenda_post.php';
             form.innerHTML = `<input type="hidden" name="accion" value="eliminar"><input type="hidden" name="id_cita" value="${id}">`;
             document.body.appendChild(form);
             form.submit();
+        }
+
+        // ===== Cargar Tabla Lista de Citas =====
+        let currentListaTab = 'activas';
+
+        function cambiarTabLista(tabName, el) {
+            document.querySelectorAll('.tabList').forEach(t => {
+                t.style.color = 'var(--text-muted)';
+                t.style.borderBottomColor = 'transparent';
+                t.style.fontWeight = 'normal';
+            });
+            el.style.color = 'var(--primary)';
+            el.style.borderBottomColor = 'var(--primary)';
+            el.style.fontWeight = '600';
+            currentListaTab = tabName;
+            cargarListaProximas();
+        }
+
+        function cargarListaProximas() {
+            const endpoint = currentListaTab === 'activas' ? 'listar_activas' : 'listar_historial';
+            
+            fetch('agenda_post.php?accion=' + endpoint)
+                .then(r => r.json())
+                .then(citas => {
+                    const tbody = document.getElementById('lista-citas-body');
+                    const emptyState = document.getElementById('citas-empty-state');
+                    tbody.innerHTML = '';
+                    
+                    if (citas.length === 0) {
+                        emptyState.style.display = 'block';
+                    } else {
+                        emptyState.style.display = 'none';
+                        citas.forEach(c => {
+                            const dateObj = new Date(c.fecha_cita);
+                            const fechaStr = dateObj.toLocaleDateString('es-VE', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+                            const horaStr = dateObj.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
+                            
+                            let estadoClass = '';
+                            if (c.estado === 'En Espera') estadoClass = 'estado-espera';
+                            else if (c.estado === 'En Consulta') estadoClass = 'estado-consulta';
+                            else if (c.estado === 'En Peluquería') estadoClass = 'estado-peluqueria';
+                            else if (c.estado === 'Finalizado') estadoClass = 'estado-finalizado';
+                            else if (c.estado === 'Cancelado') estadoClass = 'estado-cancelado';
+                            
+                            let tipoClass = '';
+                            if (c.tipo_servicio === 'Consulta Médica') tipoClass = 'badge-consulta';
+                            else if (c.tipo_servicio === 'Peluquería') tipoClass = 'badge-peluqueria';
+                            else if (c.tipo_servicio === 'Cirugía') tipoClass = 'badge-cirugia';
+
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>
+                                    <div style="font-weight: 600; color: var(--text-main);">${fechaStr}</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2px;">${horaStr}</div>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 600; color: var(--text-main);">${c.nombre_animal} <span style="font-size: 0.8rem; font-weight: 400; color: var(--text-muted);">(${c.especie})</span></div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2px;">Dueño: ${c.dueno}</div>
+                                </td>
+                                <td><span class="badge ${tipoClass}" style="font-size: 0.75rem;">${c.tipo_servicio}</span></td>
+                                <td><span class="estado-badge ${estadoClass}" style="font-size: 0.75rem;">${c.estado}</span></td>
+                                <td style="text-align: center;">
+                                    <button onclick='abrirModalEstado(${JSON.stringify(c).replace(/'/g, "\\'")})' class="action-btn" title="Editar Estado" style="padding: 8px; margin: 0; margin-right: 4px; display: inline-flex; align-items: center; justify-content: center;">
+                                        <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
+                                    </button>
+                                    <button onclick="eliminarCita(${c.id_cita})" class="action-btn danger" title="Eliminar" style="padding: 8px; margin: 0; background: #fee2e2; color: #dc2626; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center;">
+                                        <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
+                                    </button>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('Error cargando lista de citas:', err);
+                });
         }
 
         // ===== Cerrar modales con click afuera =====
@@ -786,11 +922,13 @@
                 'estado_actualizado': '✅ Estado actualizado',
                 'cita_editada': '✅ Cita modificada',
                 'cita_eliminada': '✅ Cita eliminada',
-                'error_fecha_pasada': '❌ La fecha no puede ser en el pasado'
+                'error_fecha_pasada': '❌ La fecha no puede ser en el pasado',
+                'error_solapamiento': '❌ Horario ocupado para ese servicio',
+                'error_rango': '❌ La hora de fin de cita debe ser mayor al inicio'
             };
             mostrarToast(msgs[params.get('msg')] || '✅ Acción completada');
             
-            if (params.get('msg') === 'error_fecha_pasada') {
+            if (params.get('msg') && params.get('msg').startsWith('error_')) {
                 document.getElementById('toast').style.background = 'var(--danger)';
             }
             
