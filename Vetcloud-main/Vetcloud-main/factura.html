@@ -794,8 +794,8 @@
                     <input type="text" class="inline-input" data-field="desc" value="${desc || ''}" placeholder="Descripción">
                     <input type="hidden" data-field="id_producto" value="">
                 </div>
-                <input type="number" class="inline-input" data-field="cant" value="${cant || 1}" min="1" style="width:60px;" onchange="recalcular()">
-                <input type="number" step="0.01" class="inline-input" data-field="precio" value="${precio || ''}" placeholder="0.00" style="width:80px;" onchange="recalcular()">
+                <input type="number" class="inline-input" data-field="cant" value="${cant || 1}" min="1" step="1" oninput="this.value = this.value.replace(/[^0-9]/g, ''); recalcular();" style="width:60px;">
+                <input type="number" step="0.01" min="0" oninput="if(this.value < 0) this.value = 0; recalcular();" class="inline-input" data-field="precio" value="${precio || ''}" placeholder="0.00" style="width:80px;">
                 <strong data-field="subtotal">$${((cant || 1) * (precio || 0)).toFixed(2)}</strong>
                 <button class="btn-remove" onclick="removerLinea(${idx})">✕</button>
             `;

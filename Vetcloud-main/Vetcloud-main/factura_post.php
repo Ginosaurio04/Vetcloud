@@ -46,8 +46,8 @@ switch ($accion) {
                     foreach ($_POST['items'] as $item) {
                         $id_producto = !empty($item['id_producto']) ? intval($item['id_producto']) : null;
                         $descripcion = trim($item['descripcion']);
-                        $cantidad = intval($item['cantidad']);
-                        $precio_unitario = floatval($item['precio_unitario']);
+                        $cantidad = max(1, intval($item['cantidad']));
+                        $precio_unitario = max(0, floatval($item['precio_unitario']));
                         $subtotal = $cantidad * $precio_unitario;
                         $total += $subtotal;
 
@@ -162,8 +162,8 @@ switch ($accion) {
             $id_factura = intval($_POST['id_factura']);
             $id_producto = !empty($_POST['id_producto']) ? intval($_POST['id_producto']) : null;
             $descripcion = trim($_POST['descripcion']);
-            $cantidad = intval($_POST['cantidad']);
-            $precio_unitario = floatval($_POST['precio_unitario']);
+            $cantidad = max(1, intval($_POST['cantidad']));
+            $precio_unitario = max(0, floatval($_POST['precio_unitario']));
             $subtotal = $cantidad * $precio_unitario;
 
             $stmt = $conexion->prepare("INSERT INTO detalle_factura (id_factura, id_producto, descripcion_servicio, cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?, ?)");

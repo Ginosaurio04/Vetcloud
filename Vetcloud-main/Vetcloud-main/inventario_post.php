@@ -14,10 +14,21 @@ switch ($accion) {
             $codigo_barras = trim($_POST['codigo_barras']);
             $nombre_producto = trim($_POST['nombre_producto']);
             $tipo = $_POST['tipo'];
-            $precio_venta = floatval($_POST['precio_venta']);
-            $stock_actual = intval($_POST['stock_actual']);
-            $stock_minimo = intval($_POST['stock_minimo']);
+            $precio_venta = max(0, floatval($_POST['precio_venta']));
+            $stock_actual = max(0, intval($_POST['stock_actual']));
+            $stock_minimo = max(0, intval($_POST['stock_minimo']));
             $fecha_vencimiento = !empty($_POST['fecha_vencimiento']) ? $_POST['fecha_vencimiento'] : null;
+
+            if (!empty($codigo_barras)) {
+                $stmt_check = $conexion->prepare("SELECT id_producto FROM inventario WHERE codigo_barras = ?");
+                $stmt_check->bind_param("s", $codigo_barras);
+                $stmt_check->execute();
+                if ($stmt_check->get_result()->num_rows > 0) {
+                    header("Location: inventario.html?msg=error_codigo_duplicado");
+                    exit();
+                }
+                $stmt_check->close();
+            }
 
             $stmt = $conexion->prepare("INSERT INTO inventario (codigo_barras, nombre_producto, tipo, precio_venta, stock_actual, stock_minimo, fecha_vencimiento) VALUES (?, ?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("sssdiis", $codigo_barras, $nombre_producto, $tipo, $precio_venta, $stock_actual, $stock_minimo, $fecha_vencimiento);
@@ -82,10 +93,21 @@ switch ($accion) {
             $codigo_barras = trim($_POST['codigo_barras']);
             $nombre_producto = trim($_POST['nombre_producto']);
             $tipo = $_POST['tipo'];
-            $precio_venta = floatval($_POST['precio_venta']);
-            $stock_actual = intval($_POST['stock_actual']);
-            $stock_minimo = intval($_POST['stock_minimo']);
+            $precio_venta = max(0, floatval($_POST['precio_venta']));
+            $stock_actual = max(0, intval($_POST['stock_actual']));
+            $stock_minimo = max(0, intval($_POST['stock_minimo']));
             $fecha_vencimiento = !empty($_POST['fecha_vencimiento']) ? $_POST['fecha_vencimiento'] : null;
+
+            if (!empty($codigo_barras)) {
+                $stmt_check = $conexion->prepare("SELECT id_producto FROM inventario WHERE codigo_barras = ? AND id_producto != ?");
+                $stmt_check->bind_param("si", $codigo_barras, $id_producto);
+                $stmt_check->execute();
+                if ($stmt_check->get_result()->num_rows > 0) {
+                    header("Location: inventario.html?msg=error_codigo_duplicado");
+                    exit();
+                }
+                $stmt_check->close();
+            }
 
             $stmt = $conexion->prepare("UPDATE inventario SET codigo_barras = ?, nombre_producto = ?, tipo = ?, precio_venta = ?, stock_actual = ?, stock_minimo = ?, fecha_vencimiento = ? WHERE id_producto = ?");
             $stmt->bind_param("sssdiisi", $codigo_barras, $nombre_producto, $tipo, $precio_venta, $stock_actual, $stock_minimo, $fecha_vencimiento, $id_producto);

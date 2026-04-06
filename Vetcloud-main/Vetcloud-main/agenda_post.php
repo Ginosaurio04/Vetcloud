@@ -85,6 +85,34 @@ switch ($accion) {
         break;
 
     // =============================================
+    // LISTAR CITAS PRÓXIMAS (Para tabla)
+    // =============================================
+    case 'listar_proximas':
+        $stmt = $conexion->prepare("
+            SELECT c.id_cita, c.fecha_cita, c.tipo_servicio, c.estado, c.observaciones,
+                   m.nombre_animal, m.especie, m.raza,
+                   cl.nombre_completo AS dueno, cl.telefono
+            FROM citas c
+            INNER JOIN mascotas m ON c.id_mascota = m.id_mascota
+            INNER JOIN clientes cl ON m.id_cliente = cl.id_cliente
+            WHERE c.fecha_cita >= CURDATE()
+            ORDER BY c.fecha_cita ASC
+            LIMIT 50
+        ");
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+
+        $citas = [];
+        while ($fila = $resultado->fetch_assoc()) {
+            $citas[] = $fila;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($citas);
+        $stmt->close();
+        break;
+
+    // =============================================
     // ACTUALIZAR ESTADO DE UNA CITA
     // =============================================
     case 'actualizar_estado':

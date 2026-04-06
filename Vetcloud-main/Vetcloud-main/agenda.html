@@ -520,6 +520,32 @@
         <section class="citas-card">
             <div id="calendar"></div>
         </section>
+
+        <!-- Lista de citas en formato tabla -->
+        <section class="citas-list-section" style="margin-top: 40px; margin-bottom: 40px;">
+            <div class="header-section" style="margin-bottom: 20px;">
+                <h2 style="font-size: 1.2rem; font-weight: 700; margin: 0;">Lista de Citas (Próximas)</h2>
+            </div>
+            <div class="citas-card" style="padding: 0; overflow-x: auto;">
+                <table style="width: 100%; min-width: 700px; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="background: #f8fafc; padding: 14px 20px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border);">Fecha y Hora</th>
+                            <th style="background: #f8fafc; padding: 14px 20px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border);">Paciente / Dueño</th>
+                            <th style="background: #f8fafc; padding: 14px 20px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border);">Servicio</th>
+                            <th style="background: #f8fafc; padding: 14px 20px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border);">Estado</th>
+                            <th style="background: #f8fafc; padding: 14px 20px; text-align: center; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border);">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-citas-body">
+                        <!-- Citas will be injected here -->
+                    </tbody>
+                </table>
+                <div id="citas-empty-state" style="padding: 40px; text-align: center; color: var(--text-muted); display: none;">
+                    No hay citas registradas próximamente.
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Modal Nueva Cita -->
@@ -671,6 +697,7 @@
 
             calendarObj.render();
             cargarMascotas();
+            cargarListaProximas();
         });
 
         // ===== Cargar estadísticas =====
@@ -754,16 +781,83 @@
             document.getElementById('modalEstado').classList.remove('active');
         }
 
-        // ===== Eliminar =====
+        // ===== Eliminar desde Modal =====
         function eliminarCitaDesdeModal() {
             const id = document.getElementById('estado-id').value;
             if (!confirm('¿Seguro que desea eliminar esta cita permanentemente?')) return;
+            eliminarCitaId(id);
+        }
+
+        // ===== Eliminar Directamente =====
+        function eliminarCita(id) {
+            if (!confirm('¿Seguro que desea eliminar esta cita de la agenda permanentemente?')) return;
+            eliminarCitaId(id);
+        }
+        
+        function eliminarCitaId(id) {
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = 'agenda_post.php';
             form.innerHTML = `<input type="hidden" name="accion" value="eliminar"><input type="hidden" name="id_cita" value="${id}">`;
             document.body.appendChild(form);
             form.submit();
+        }
+
+        // ===== Cargar Tabla Lista de Citas =====
+        function cargarListaProximas() {
+            fetch('agenda_post.php?accion=listar_proximas')
+                .then(r => r.json())
+                .then(citas => {
+                    const tbody = document.getElementById('lista-citas-body');
+                    const emptyState = document.getElementById('citas-empty-state');
+                    tbody.innerHTML = '';
+                    
+                    if (citas.length === 0) {
+                        emptyState.style.display = 'block';
+                    } else {
+                        emptyState.style.display = 'none';
+                        citas.forEach(c => {
+                            const dateObj = new Date(c.fecha_cita);
+                            const fechaStr = dateObj.toLocaleDateString('es-VE', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+                            const horaStr = dateObj.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
+                            
+                            let estadoClass = '';
+                            if (c.estado === 'En Espera') estadoClass = 'estado-espera';
+                            else if (c.estado === 'En Consulta') estadoClass = 'estado-consulta';
+                            else if (c.estado === 'En Peluquería') estadoClass = 'estado-peluqueria';
+                            else if (c.estado === 'Finalizado') estadoClass = 'estado-finalizado';
+                            else if (c.estado === 'Cancelado') estadoClass = 'estado-cancelado';
+                            
+                            let tipoClass = '';
+                            if (c.tipo_servicio === 'Consulta Médica') tipoClass = 'badge-consulta';
+                            else if (c.tipo_servicio === 'Peluquería') tipoClass = 'badge-peluqueria';
+                            else if (c.tipo_servicio === 'Cirugía') tipoClass = 'badge-cirugia';
+
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>
+                                    <div style="font-weight: 600; color: var(--text-main);">${fechaStr}</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2px;">${horaStr}</div>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 600; color: var(--text-main);">${c.nombre_animal} <span style="font-size: 0.8rem; font-weight: 400; color: var(--text-muted);">(${c.especie})</span></div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2px;">Dueño: ${c.dueno}</div>
+                                </td>
+                                <td><span class="badge ${tipoClass}" style="font-size: 0.75rem;">${c.tipo_servicio}</span></td>
+                                <td><span class="estado-badge ${estadoClass}" style="font-size: 0.75rem;">${c.estado}</span></td>
+                                <td style="text-align: center;">
+                                    <button onclick="eliminarCita(${c.id_cita})" class="action-btn danger" title="Eliminar" style="padding: 8px; margin: 0; background: #fee2e2; color: #dc2626; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center;">
+                                        <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
+                                    </button>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error('Error cargando lista de citas:', err);
+                });
         }
 
         // ===== Cerrar modales con click afuera =====
