@@ -697,9 +697,14 @@
                 'producto_creado': '✅ Producto agregado exitosamente',
                 'producto_editado': '✅ Producto actualizado',
                 'producto_eliminado': '✅ Producto eliminado',
-                'stock_actualizado': '✅ Stock actualizado'
+                'stock_actualizado': '✅ Stock actualizado',
+                'error_codigo_duplicado': '❌ El código ya está en uso'
             };
             mostrarToast(msgs[params.get('msg')] || '✅ Acción completada');
+            
+            if (params.get('msg') === 'error_codigo_duplicado') {
+                document.getElementById('toast').style.background = 'var(--danger)';
+            }
             window.history.replaceState({}, '', 'inventario.html');
         }
 
