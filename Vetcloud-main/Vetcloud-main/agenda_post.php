@@ -14,8 +14,15 @@ switch ($accion) {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $id_mascota = intval($_POST['id_mascota']);
             $fecha_cita = $_POST['fecha_cita'];
+            $fecha_fin = $_POST['fecha_fin'];
             $tipo_servicio = $_POST['tipo_servicio'];
             $observaciones = trim($_POST['observaciones']);
+
+            // Validar lógicamente las fechas
+            if ($fecha_cita >= $fecha_fin) {
+                header("Location: agenda.html?msg=error_rango");
+                exit();
+            }
 
             // Validar que la cita no sea de un día anterior al actual
             $fecha_cita_date = date('Y-m-d', strtotime($fecha_cita));
@@ -26,8 +33,24 @@ switch ($accion) {
                 exit();
             }
 
-            $stmt = $conexion->prepare("INSERT INTO citas (id_mascota, fecha_cita, tipo_servicio, estado, observaciones) VALUES (?, ?, ?, 'En Espera', ?)");
-            $stmt->bind_param("isss", $id_mascota, $fecha_cita, $tipo_servicio, $observaciones);
+            // Validar solapamiento de rangos
+            $stmt_overlap = $conexion->prepare("
+                SELECT id_cita FROM citas 
+                WHERE tipo_servicio = ? 
+                  AND estado NOT IN ('Cancelado')
+                  AND fecha_cita < ? 
+                  AND fecha_fin > ?
+            ");
+            $stmt_overlap->bind_param("sss", $tipo_servicio, $fecha_fin, $fecha_cita);
+            $stmt_overlap->execute();
+            if ($stmt_overlap->get_result()->num_rows > 0) {
+                header("Location: agenda.html?msg=error_solapamiento");
+                exit();
+            }
+            $stmt_overlap->close();
+
+            $stmt = $conexion->prepare("INSERT INTO citas (id_mascota, fecha_cita, fecha_fin, tipo_servicio, estado, observaciones) VALUES (?, ?, ?, ?, 'En Espera', ?)");
+            $stmt->bind_param("issss", $id_mascota, $fecha_cita, $fecha_fin, $tipo_servicio, $observaciones);
 
             if ($stmt->execute()) {
                 header("Location: agenda.html?msg=cita_creada");
@@ -47,7 +70,7 @@ switch ($accion) {
             $start = $_GET['start'];
             $end = $_GET['end'];
             $stmt = $conexion->prepare("
-                SELECT c.id_cita, c.fecha_cita, c.tipo_servicio, c.estado, c.observaciones,
+                SELECT c.id_cita, c.fecha_cita, c.fecha_fin, c.tipo_servicio, c.estado, c.observaciones,
                        m.nombre_animal, m.especie, m.raza,
                        cl.nombre_completo AS dueno, cl.telefono
                 FROM citas c
@@ -60,7 +83,7 @@ switch ($accion) {
         } else {
             $fecha = isset($_GET['fecha']) ? $_GET['fecha'] : date('Y-m-d');
             $stmt = $conexion->prepare("
-                SELECT c.id_cita, c.fecha_cita, c.tipo_servicio, c.estado, c.observaciones,
+                SELECT c.id_cita, c.fecha_cita, c.fecha_fin, c.tipo_servicio, c.estado, c.observaciones,
                        m.nombre_animal, m.especie, m.raza,
                        cl.nombre_completo AS dueno, cl.telefono
                 FROM citas c
@@ -85,19 +108,47 @@ switch ($accion) {
         break;
 
     // =============================================
-    // LISTAR CITAS PRÓXIMAS (Para tabla)
+    // LISTAR CITAS ACTIVAS (Futuras sin finalizar)
     // =============================================
-    case 'listar_proximas':
+    case 'listar_activas':
         $stmt = $conexion->prepare("
-            SELECT c.id_cita, c.fecha_cita, c.tipo_servicio, c.estado, c.observaciones,
+            SELECT c.id_cita, c.fecha_cita, c.fecha_fin, c.tipo_servicio, c.estado, c.observaciones,
                    m.nombre_animal, m.especie, m.raza,
                    cl.nombre_completo AS dueno, cl.telefono
             FROM citas c
             INNER JOIN mascotas m ON c.id_mascota = m.id_mascota
             INNER JOIN clientes cl ON m.id_cliente = cl.id_cliente
-            WHERE c.fecha_cita >= CURDATE()
+            WHERE c.fecha_cita >= CURDATE() AND c.estado NOT IN ('Finalizado', 'Cancelado')
             ORDER BY c.fecha_cita ASC
             LIMIT 50
+        ");
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+
+        $citas = [];
+        while ($fila = $resultado->fetch_assoc()) {
+            $citas[] = $fila;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($citas);
+        $stmt->close();
+        break;
+
+    // =============================================
+    // LISTAR HISTORIAL DE CITAS
+    // =============================================
+    case 'listar_historial':
+        $stmt = $conexion->prepare("
+            SELECT c.id_cita, c.fecha_cita, c.fecha_fin, c.tipo_servicio, c.estado, c.observaciones,
+                   m.nombre_animal, m.especie, m.raza,
+                   cl.nombre_completo AS dueno, cl.telefono
+            FROM citas c
+            INNER JOIN mascotas m ON c.id_mascota = m.id_mascota
+            INNER JOIN clientes cl ON m.id_cliente = cl.id_cliente
+            WHERE c.fecha_cita < CURDATE() OR c.estado IN ('Finalizado', 'Cancelado')
+            ORDER BY c.fecha_cita DESC
+            LIMIT 100
         ");
         $stmt->execute();
         $resultado = $stmt->get_result();
@@ -146,11 +197,34 @@ switch ($accion) {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $id_cita = intval($_POST['id_cita']);
             $fecha_cita = $_POST['fecha_cita'];
+            $fecha_fin = $_POST['fecha_fin'];
             $tipo_servicio = $_POST['tipo_servicio'];
             $observaciones = trim($_POST['observaciones']);
 
-            $stmt = $conexion->prepare("UPDATE citas SET fecha_cita = ?, tipo_servicio = ?, observaciones = ? WHERE id_cita = ?");
-            $stmt->bind_param("sssi", $fecha_cita, $tipo_servicio, $observaciones, $id_cita);
+            if ($fecha_cita >= $fecha_fin) {
+                header("Location: agenda.html?msg=error_rango");
+                exit();
+            }
+
+            // Validar solapamiento de rangos
+            $stmt_overlap = $conexion->prepare("
+                SELECT id_cita FROM citas 
+                WHERE tipo_servicio = ? 
+                  AND id_cita != ?
+                  AND estado NOT IN ('Cancelado')
+                  AND fecha_cita < ? 
+                  AND fecha_fin > ?
+            ");
+            $stmt_overlap->bind_param("siss", $tipo_servicio, $id_cita, $fecha_fin, $fecha_cita);
+            $stmt_overlap->execute();
+            if ($stmt_overlap->get_result()->num_rows > 0) {
+                header("Location: agenda.html?msg=error_solapamiento");
+                exit();
+            }
+            $stmt_overlap->close();
+
+            $stmt = $conexion->prepare("UPDATE citas SET fecha_cita = ?, fecha_fin = ?, tipo_servicio = ?, observaciones = ? WHERE id_cita = ?");
+            $stmt->bind_param("ssssi", $fecha_cita, $fecha_fin, $tipo_servicio, $observaciones, $id_cita);
 
             if ($stmt->execute()) {
                 header("Location: agenda.html?msg=cita_editada");
