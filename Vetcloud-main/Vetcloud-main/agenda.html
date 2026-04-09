@@ -8,6 +8,10 @@
     <link rel="shortcut icon" href="./images/favicon.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
     <style>
         :root {
@@ -536,7 +540,7 @@
                         Historial de Citas
                     </div>
                 </div>
-                <table style="width: 100%; min-width: 700px; border-collapse: collapse;">
+                <table id="tabla-citas-dt" class="display responsive nowrap" style="width: 100%; min-width: 700px; border-collapse: collapse;">
                     <thead>
                         <tr>
                             <th style="background: #f8fafc; padding: 14px 20px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border);">Fecha y Hora</th>
@@ -897,6 +901,21 @@
                             tbody.appendChild(tr);
                         });
                     }
+
+                    // DataTables initialization
+                    if ($.fn.DataTable.isDataTable('#tabla-citas-dt')) {
+                        $('#tabla-citas-dt').DataTable().destroy();
+                    }
+                    if (citas.length > 0) {
+                        $('#tabla-citas-dt').DataTable({
+                            responsive: true,
+                            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
+                            paging: true,
+                            info: true,
+                            searching: true,
+                            destroy: true
+                        });
+                    }
                 })
                 .catch(err => {
                     console.error('Error cargando lista de citas:', err);
@@ -935,6 +954,11 @@
             window.history.replaceState({}, '', 'agenda.html');
         }
     </script>
+    
+    <!-- DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
 </body>
 
