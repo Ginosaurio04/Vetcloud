@@ -5,7 +5,7 @@ $sql = "CREATE TABLE IF NOT EXISTS inventario (
     id_producto INT(11) AUTO_INCREMENT PRIMARY KEY,
     codigo_barras VARCHAR(100) NULL,
     nombre_producto VARCHAR(255) NOT NULL,
-    tipo VARCHAR(100) NOT NULL,
+    tipo ENUM('Medicamento', 'Vacuna', 'Accesorio', 'Alimento', 'Higiene') NOT NULL,
     precio_venta DECIMAL(10, 2) NOT NULL,
     stock_actual INT(11) NOT NULL DEFAULT 0,
     stock_minimo INT(11) NOT NULL DEFAULT 0,
