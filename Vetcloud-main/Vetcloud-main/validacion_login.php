@@ -20,11 +20,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         }
         else {
-            echo "Contraseña incorrecta";
+            echo "<script>
+                    alert('Contraseña incorrecta');
+                    window.history.back();
+                  </script>";
         }
     }
     else {
-        echo "Usuario no encontrado";
+        echo "<script>
+                alert('Usuario no encontrado');
+                window.history.back();
+              </script>";
     }
     $stmt->close();
     $conexion->close();

@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('America/Caracas');
 $host = "localhost";
 $user = "root";
 $pass = "";
@@ -11,4 +12,5 @@ if ($conexion->connect_error) {
 }
 
 $conexion->set_charset("utf8mb4");
+$conexion->query("SET time_zone = '-04:00'");
 ?>

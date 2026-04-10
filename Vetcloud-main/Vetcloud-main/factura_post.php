@@ -274,7 +274,7 @@ switch ($accion) {
             FROM citas c
             INNER JOIN mascotas m ON c.id_mascota = m.id_mascota
             INNER JOIN clientes cl ON m.id_cliente = cl.id_cliente
-            WHERE DATE(c.fecha_cita) = CURDATE()
+            WHERE DATE(c.fecha_cita) = CURDATE() AND c.estado NOT IN ('Facturado', 'Cancelado')
             ORDER BY c.fecha_cita ASC
         ");
 

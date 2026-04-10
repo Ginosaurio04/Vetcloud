@@ -13,10 +13,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("sss", $username, $email, $passwordhash);
 
     if ($stmt->execute()) {
-        echo "<h3>Registro Exitoso</h3> <a href='login.html'>Ir al Login</a>";
+        echo "<script>
+                alert('Registro Exitoso. Ahora puede iniciar sesión.');
+                window.location.href = 'login.html';
+              </script>";
     }
     else {
-        echo "Error: El usuario o email ya están registrados";
+        echo "<script>
+                alert('Error: El usuario o email ya están registrados');
+                window.history.back();
+              </script>";
     }
 
     $stmt->close();

@@ -97,6 +97,38 @@
             font-weight: 600;
         }
 
+        /* --- Navbar Responsive --- */
+        @media (max-width: 768px) {
+            nav {
+                height: auto;
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .nav-left {
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .nav-right {
+                position: absolute;
+                top: 15px;
+                right: 20px;
+            }
+            .nav-links {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 5px;
+                gap: 5px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .nav-links::-webkit-scrollbar {
+                display: none;
+            }
+        }
+
         main {
             max-width: 1200px;
             margin: 30px auto;
@@ -133,6 +165,17 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .stat-card {

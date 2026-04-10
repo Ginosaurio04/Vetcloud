@@ -99,6 +99,38 @@
             font-weight: 600;
         }
 
+        /* --- Navbar Responsive --- */
+        @media (max-width: 768px) {
+            nav {
+                height: auto;
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .nav-left {
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .nav-right {
+                position: absolute;
+                top: 15px;
+                right: 20px;
+            }
+            .nav-links {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 5px;
+                gap: 5px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .nav-links::-webkit-scrollbar {
+                display: none;
+            }
+        }
+
         main {
             max-width: 1200px;
             margin: 30px auto;
@@ -465,6 +497,17 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
     </style>
 </head>
 
@@ -531,7 +574,7 @@
             <div class="header-section" style="margin-bottom: 20px;">
                 <h2 style="font-size: 1.2rem; font-weight: 700; margin: 0;">Lista de Citas</h2>
             </div>
-            <div class="citas-card" style="padding: 0; overflow-x: auto;">
+            <div class="citas-card" style="padding: 0; width: 100%;">
                 <div style="display: flex; border-bottom: 1px solid var(--border); background: #fcfcfd; padding: 0 20px;">
                     <div class="tabList active" onclick="cambiarTabLista('activas', this)" style="padding: 16px 20px; cursor: pointer; color: var(--primary); font-size: 0.9rem; border-bottom: 2px solid var(--primary); font-weight: 600; transition: 0.2s;">
                         Citas Activas
@@ -540,7 +583,7 @@
                         Historial de Citas
                     </div>
                 </div>
-                <table id="tabla-citas-dt" class="display responsive nowrap" style="width: 100%; min-width: 700px; border-collapse: collapse;">
+                <table id="tabla-citas-dt" class="display responsive nowrap" style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr>
                             <th style="background: #f8fafc; padding: 14px 20px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border);">Fecha y Hora</th>
@@ -879,21 +922,46 @@
 
                             const tr = document.createElement('tr');
                             tr.innerHTML = `
-                                <td>
-                                    <div style="font-weight: 600; color: var(--text-main);">${fechaStr}</div>
-                                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2px;">${horaStr}</div>
+                                <td style="padding: 16px 20px; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 38px; height: 38px; border-radius: 10px; background: #f1f5f9; color: var(--text-muted); display: flex; align-items: center; justify-content: center;">
+                                            <span class="material-symbols-outlined" style="font-size: 20px;">event</span>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: var(--text-main); font-size: 0.9rem;">${fechaStr}</div>
+                                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 3px; display: flex; align-items: center; gap: 4px;">
+                                                <span class="material-symbols-outlined" style="font-size: 14px;">schedule</span> ${horaStr}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
-                                <td>
-                                    <div style="font-weight: 600; color: var(--text-main);">${c.nombre_animal} <span style="font-size: 0.8rem; font-weight: 400; color: var(--text-muted);">(${c.especie})</span></div>
-                                    <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2px;">Dueño: ${c.dueno}</div>
+                                <td style="padding: 16px 20px; vertical-align: middle;">
+                                    <div style="display: flex; align-items: center; gap: 14px;">
+                                        <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(79,70,229,0.15);">
+                                            <span class="material-symbols-outlined" style="font-size: 22px;">pets</span>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 700; color: var(--text-main); font-size: 0.95rem;">
+                                                ${c.nombre_animal} 
+                                                <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted); background: #f1f5f9; padding: 2px 6px; border-radius: 12px; margin-left: 6px;">${c.especie}</span>
+                                            </div>
+                                            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                                                <span class="material-symbols-outlined" style="font-size: 14px;">person</span> Dueño: ${c.dueno}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
-                                <td><span class="badge ${tipoClass}" style="font-size: 0.75rem;">${c.tipo_servicio}</span></td>
-                                <td><span class="estado-badge ${estadoClass}" style="font-size: 0.75rem;">${c.estado}</span></td>
-                                <td style="text-align: center;">
-                                    <button onclick='abrirModalEstado(${JSON.stringify(c).replace(/'/g, "\\'")})' class="action-btn" title="Editar Estado" style="padding: 8px; margin: 0; margin-right: 4px; display: inline-flex; align-items: center; justify-content: center;">
+                                <td style="padding: 16px 20px; vertical-align: middle;">
+                                    <span class="badge ${tipoClass}" style="font-size: 0.75rem; padding: 5px 12px; border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">${c.tipo_servicio}</span>
+                                </td>
+                                <td style="padding: 16px 20px; vertical-align: middle;">
+                                    <span class="estado-badge ${estadoClass}" style="font-size: 0.75rem; padding: 5px 12px; border-radius: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">${c.estado}</span>
+                                </td>
+                                <td style="text-align: center; padding: 16px 20px; vertical-align: middle;">
+                                    <button onclick='abrirModalEstado(${JSON.stringify(c).replace(/'/g, "\\'")})' title="Editar Estado" style="background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 8px; margin-right: 6px; border-radius: 8px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center;" onmouseover="this.style.background='var(--primary-light)'; this.style.color='var(--primary)'; this.style.borderColor='var(--primary)';" onmouseout="this.style.background='none'; this.style.color='var(--text-muted)'; this.style.borderColor='var(--border)';">
                                         <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
                                     </button>
-                                    <button onclick="eliminarCita(${c.id_cita})" class="action-btn danger" title="Eliminar" style="padding: 8px; margin: 0; background: #fee2e2; color: #dc2626; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center;">
+                                    <button onclick="eliminarCita(${c.id_cita})" title="Eliminar" style="background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center;" onmouseover="this.style.background='#fee2e2'; this.style.color='#dc2626'; this.style.borderColor='#dc2626';" onmouseout="this.style.background='none'; this.style.color='var(--text-muted)'; this.style.borderColor='var(--border)';">
                                         <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
                                     </button>
                                 </td>

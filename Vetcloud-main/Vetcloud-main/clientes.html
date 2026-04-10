@@ -96,6 +96,38 @@
             font-weight: 600;
         }
 
+        /* --- Navbar Responsive --- */
+        @media (max-width: 768px) {
+            nav {
+                height: auto;
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .nav-left {
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .nav-right {
+                position: absolute;
+                top: 15px;
+                right: 20px;
+            }
+            .nav-links {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 5px;
+                gap: 5px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .nav-links::-webkit-scrollbar {
+                display: none;
+            }
+        }
+
         /* --- Main --- */
         main {
             max-width: 1200px;
@@ -793,6 +825,12 @@
 
             .mascotas-panel {
                 width: 100vw;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
         /* Inline pet cards in modal */
