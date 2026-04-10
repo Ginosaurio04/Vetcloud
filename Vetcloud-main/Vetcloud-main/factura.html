@@ -546,6 +546,43 @@
                 gap: 15px;
             }
         }
+
+        /* --- User Modal --- */
+        .user-modal {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 20px;
+            width: 250px;
+            z-index: 1000;
+            display: none;
+            animation: slideDownFade 0.3s ease;
+        }
+        @keyframes slideDownFade {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .user-modal h4 { margin: 0 0 10px 0; color: var(--text-main); font-size: 1rem; }
+        .user-modal p { margin: 5px 0; font-size: 0.85rem; color: var(--text-muted); }
+        .user-modal hr { border: 0; border-top: 1px solid var(--border); margin: 15px 0; }
+        .btn-logout {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #fee2e2;
+            color: #dc2626;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .btn-logout:hover { background: #fecaca; }
     </style>
 </head>
 
@@ -553,7 +590,7 @@
 
     <nav>
         <div class="nav-left">
-            <div class="logo">
+            <div class="logo" style="cursor: pointer;" onclick="toggleUserModal()">
                 <span class="material-symbols-outlined">pets</span> VetCloud
             </div>
             <ul class="nav-links">
@@ -567,9 +604,28 @@
         <div class="nav-right" style="display: flex; align-items: center; gap: 15px;">
             <span class="material-symbols-outlined"
                 style="color: var(--text-muted); cursor: pointer;">notifications</span>
-            <div style="width: 35px; height: 35px; background: #ddd; border-radius: 50%;"></div>
+            <div style="width: 35px; height: 35px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="toggleUserModal()">
+                <span class="material-symbols-outlined" style="font-size: 20px;">person</span>
+            </div>
         </div>
     </nav>
+
+    <div id="userModal" class="user-modal">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+            <div style="width: 40px; height: 40px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <span class="material-symbols-outlined">account_circle</span>
+            </div>
+            <div>
+                <h4 id="user-name" style="margin:0;">Cargando...</h4>
+                <p id="user-email" style="margin:0; font-size: 0.75rem;">...</p>
+            </div>
+        </div>
+        <hr>
+        <a href="logout.php" class="btn-logout">
+            <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle; margin-right: 5px;">logout</span>
+            Cerrar Sesión
+        </a>
+    </div>
 
     <main>
 
@@ -1152,12 +1208,41 @@
                 });
         }
 
+        // ===== User Modal Logic =====
+        function toggleUserModal() {
+            const modal = document.getElementById('userModal');
+            if (modal.style.display === 'block') {
+                modal.style.display = 'none';
+            } else {
+                fetch('session_info.php')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            document.getElementById('user-name').textContent = data.user.username;
+                            document.getElementById('user-email').textContent = data.user.email;
+                            modal.style.display = 'block';
+                        } else {
+                            window.location.href = 'login.html';
+                        }
+                    });
+            }
+        }
+
+        window.addEventListener('click', function (e) {
+            const modal = document.getElementById('userModal');
+            const logo = document.querySelector('.logo');
+            const avatar = document.querySelector('.nav-right div');
+            if (modal && modal.style.display === 'block') {
+                if (!modal.contains(e.target) && !logo.contains(e.target) && !avatar.contains(e.target)) {
+                    modal.style.display = 'none';
+                }
+            }
+        });
+
         // ===== Init =====
         cargarVisitas();
         cargarProductos();
         cargarFacturasRecientes();
     </script>
-
 </body>
-
 </html>
