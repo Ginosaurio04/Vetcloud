@@ -583,6 +583,28 @@
             transition: 0.2s;
         }
         .btn-logout:hover { background: #fecaca; }
+
+        /* --- Toggle buttons --- */
+        .btn-toggle {
+            flex: 1;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--text-muted);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-toggle.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .btn-toggle:hover {
+            border-color: var(--primary);
+        }
     </style>
 </head>
 
@@ -662,7 +684,7 @@
                     <div>
                         <h2 style="margin:0; font-size:1.2rem;">Constructor de Factura</h2>
                         <span style="color: var(--text-muted); font-size: 0.8rem;" id="invoice-draft">Seleccione una
-                            visita o cree manualmente</span>
+                            visita o un cliente</span>
                     </div>
                     <div style="text-align: right">
                         <small style="color: var(--text-muted)">Fecha</small><br>
@@ -670,8 +692,16 @@
                     </div>
                 </div>
 
-                <!-- Selección de cliente (cuando no viene de cita) -->
-                <div id="client-selector" style="margin-bottom:20px;display:none;">
+                <!-- Toggle entre modo cita y modo manual -->
+                <div style="margin-bottom:20px;">
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <button id="btn-modo-cita" class="btn-toggle active" onclick="cambiarModo('cita')">Basado en Cita</button>
+                        <button id="btn-modo-manual" class="btn-toggle" onclick="cambiarModo('manual')">Factura Manual</button>
+                    </div>
+                </div>
+
+                <!-- Selección de cliente (siempre visible en modo manual) -->
+                <div id="client-selector" style="margin-bottom:20px;">
                     <label
                         style="font-size:0.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Cliente</label>
                     <select id="sel-cliente"
@@ -772,9 +802,32 @@
         let selectedClienteId = null;
         let itemCounter = 0;
         let productosDisponibles = [];
+        let modoActual = 'cita'; // 'cita' o 'manual'
 
         // Set today's date
         document.getElementById('invoice-date').textContent = new Date().toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' });
+
+        // ===== Mode switching =====
+        function cambiarModo(modo) {
+            modoActual = modo;
+            document.getElementById('btn-modo-cita').classList.toggle('active', modo === 'cita');
+            document.getElementById('btn-modo-manual').classList.toggle('active', modo === 'manual');
+            
+            if (modo === 'cita') {
+                // Mostrar lista de visitas, ocultar selector de cliente
+                document.getElementById('visits-list').style.display = 'block';
+                document.getElementById('client-selector').style.display = 'none';
+                document.getElementById('invoice-draft').textContent = 'Seleccione una visita';
+                limpiarFactura();
+            } else {
+                // Ocultar lista de visitas, mostrar selector de cliente
+                document.getElementById('visits-list').style.display = 'none';
+                document.getElementById('client-selector').style.display = 'block';
+                document.getElementById('invoice-draft').textContent = 'Factura manual';
+                limpiarFactura();
+                cargarClientes();
+            }
+        }
 
         // ===== Load today's visits from citas =====
         function cargarVisitas() {
@@ -786,10 +839,8 @@
                         container.innerHTML = `<div class="visits-empty">
                             <span class="material-symbols-outlined">event_busy</span>
                             No hay visitas programadas hoy.<br>
-                            <small>Puede crear una factura manual.</small>
+                            <small>Use el modo "Factura Manual" para crear facturas sin cita.</small>
                         </div>`;
-                        document.getElementById('client-selector').style.display = 'block';
-                        cargarClientes();
                         return;
                     }
 
@@ -961,10 +1012,20 @@
 
         // ===== Submit invoice =====
         function finalizarFactura() {
-            const clienteId = selectedClienteId || document.getElementById('sel-cliente').value;
-            if (!clienteId) {
-                alert('Seleccione una visita o un cliente primero.');
-                return;
+            let clienteId;
+            
+            if (modoActual === 'cita') {
+                clienteId = selectedClienteId;
+                if (!clienteId) {
+                    alert('Seleccione una visita primero.');
+                    return;
+                }
+            } else {
+                clienteId = document.getElementById('sel-cliente').value;
+                if (!clienteId) {
+                    alert('Seleccione un cliente.');
+                    return;
+                }
             }
 
             const items = [];
@@ -1018,14 +1079,17 @@
             selectedClienteId = null;
             document.querySelectorAll('.visit-item').forEach(v => v.classList.remove('selected'));
             document.getElementById('sum-pet').textContent = '—';
-            document.getElementById('sum-breed').textContent = 'Seleccione una visita';
+            document.getElementById('sum-breed').textContent = modoActual === 'cita' ? 'Seleccione una visita' : 'Factura manual';
             document.getElementById('sum-owner').textContent = '—';
             document.getElementById('sum-cedula').textContent = '—';
             document.getElementById('sum-phone').textContent = '—';
             document.getElementById('sum-loyalty').textContent = '—';
-            document.getElementById('invoice-draft').textContent = 'Seleccione una visita o cree manualmente';
-            document.getElementById('client-selector').style.display = 'block';
-            cargarClientes();
+            document.getElementById('invoice-draft').textContent = modoActual === 'cita' ? 'Seleccione una visita' : 'Factura manual';
+            
+            if (modoActual === 'manual') {
+                document.getElementById('client-selector').style.display = 'block';
+                cargarClientes();
+            }
         }
 
         // ===== Load recent invoices =====
@@ -1169,12 +1233,13 @@
                 'factura_creada': '✅ Factura creada exitosamente',
                 'factura_eliminada': '✅ Factura eliminada',
                 'item_agregado': '✅ Ítem agregado',
-                'error_cita_facturada': '❌ La cita ya se encuentra facturada'
+                'error_cita_facturada': '❌ La cita ya se encuentra facturada',
+                'error_stock_insuficiente': '❌ Stock insuficiente para uno o más productos'
             };
             mostrarToast(msgs[params.get('msg')] || '✅ Acción completada');
             
             // Si hay error, aplicar estilo de error al toast
-            if (params.get('msg') === 'error_cita_facturada') {
+            if (params.get('msg') === 'error_cita_facturada' || params.get('msg') === 'error_stock_insuficiente') {
                 document.getElementById('toast').style.background = 'var(--danger)';
             }
             
@@ -1240,6 +1305,7 @@
         });
 
         // ===== Init =====
+        cambiarModo('cita'); // Set default mode
         cargarVisitas();
         cargarProductos();
         cargarFacturasRecientes();

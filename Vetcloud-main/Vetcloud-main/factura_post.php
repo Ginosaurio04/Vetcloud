@@ -37,6 +37,39 @@ switch ($accion) {
             if ($stmt->execute()) {
                 $id_factura = $conexion->insert_id;
 
+                // Verificar stock antes de insertar detalles
+                $stock_insuficiente = false;
+                if (isset($_POST['items']) && is_array($_POST['items'])) {
+                    foreach ($_POST['items'] as $item) {
+                        $id_producto = !empty($item['id_producto']) ? intval($item['id_producto']) : null;
+                        $cantidad = max(1, intval($item['cantidad']));
+                        
+                        if ($id_producto) {
+                            $stmt_check_stock = $conexion->prepare("SELECT stock_actual, nombre_producto FROM inventario WHERE id_producto = ?");
+                            $stmt_check_stock->bind_param("i", $id_producto);
+                            $stmt_check_stock->execute();
+                            $resultado_stock = $stmt_check_stock->get_result();
+                            if ($fila_stock = $resultado_stock->fetch_assoc()) {
+                                if ($fila_stock['stock_actual'] < $cantidad) {
+                                    $stock_insuficiente = true;
+                                    break;
+                                }
+                            }
+                            $stmt_check_stock->close();
+                        }
+                    }
+                }
+
+                if ($stock_insuficiente) {
+                    // Eliminar la factura creada ya que no se puede completar
+                    $stmt_delete = $conexion->prepare("DELETE FROM facturas WHERE id_factura = ?");
+                    $stmt_delete->bind_param("i", $id_factura);
+                    $stmt_delete->execute();
+                    $stmt_delete->close();
+                    header("Location: factura.html?msg=error_stock_insuficiente");
+                    exit();
+                }
+
                 // Insertar los detalles de la factura
                 if (isset($_POST['items']) && is_array($_POST['items'])) {
                     $total = 0;
@@ -165,6 +198,21 @@ switch ($accion) {
             $cantidad = max(1, intval($_POST['cantidad']));
             $precio_unitario = max(0, floatval($_POST['precio_unitario']));
             $subtotal = $cantidad * $precio_unitario;
+
+            // Verificar stock si es un producto
+            if ($id_producto) {
+                $stmt_check_stock = $conexion->prepare("SELECT stock_actual, nombre_producto FROM inventario WHERE id_producto = ?");
+                $stmt_check_stock->bind_param("i", $id_producto);
+                $stmt_check_stock->execute();
+                $resultado_stock = $stmt_check_stock->get_result();
+                if ($fila_stock = $resultado_stock->fetch_assoc()) {
+                    if ($fila_stock['stock_actual'] < $cantidad) {
+                        header("Location: factura.html?msg=error_stock_insuficiente");
+                        exit();
+                    }
+                }
+                $stmt_check_stock->close();
+            }
 
             $stmt = $conexion->prepare("INSERT INTO detalle_factura (id_factura, id_producto, descripcion_servicio, cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("iisidd", $id_factura, $id_producto, $descripcion, $cantidad, $precio_unitario, $subtotal);
