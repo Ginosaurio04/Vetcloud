@@ -50,7 +50,7 @@ switch ($accion) {
         $tipo_filtro = isset($_GET['tipo']) ? $_GET['tipo'] : '';
 
         if (!empty($tipo_filtro) && $tipo_filtro !== 'Todos') {
-            $stmt = $conexion->prepare("SELECT * FROM inventario WHERE tipo = ? ORDER BY nombre_producto ASC");
+            $stmt = $conexion->prepare("SELECT * FROM inventario WHERE TRIM(tipo) = TRIM(?) ORDER BY nombre_producto ASC");
             $stmt->bind_param("s", $tipo_filtro);
             $stmt->execute();
             $resultado = $stmt->get_result();

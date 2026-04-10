@@ -318,8 +318,78 @@
 
         .empty-table {
             text-align: center;
-            padding: 40px;
+            padding: 60px 40px;
             color: var(--text-muted);
+        }
+
+        .empty-table .material-symbols-outlined {
+            font-size: 48px;
+            color: #cbd5e1;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        /* --- Loading Overlay --- */
+        #loading-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.7);
+            z-index: 10;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(2px);
+            border-radius: 12px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f1f5f9;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- Inventory Row Styles --- */
+        .inventory-row {
+            transition: background 0.2s;
+        }
+        .inventory-row:hover {
+            background: #f8fafc;
+        }
+
+        .prod-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .stock-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        .vencimiento-alerta {
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
 
         /* --- Modal --- */
@@ -538,6 +608,22 @@
     </div>
 
     <main>
+        <div id="userModal" class="user-modal">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <div style="width: 40px; height: 40px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <span class="material-symbols-outlined">account_circle</span>
+                </div>
+                <div>
+                    <h4 id="user-name" style="margin:0;">Cargando...</h4>
+                    <p id="user-email" style="margin:0; font-size: 0.75rem;">...</p>
+                </div>
+            </div>
+            <hr>
+            <a href="logout.php" class="btn-logout">
+                <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle; margin-right: 5px;">logout</span>
+                Cerrar Sesión
+            </a>
+        </div>
         <header class="header-section">
             <div>
                 <h1 style="margin:0; font-size: 1.5rem; font-weight: 700;">Gestión de Inventario</h1>
@@ -551,26 +637,45 @@
 
         <section class="stats-grid">
             <div class="stat-card">
-                <span class="stat-label">Alertas de Stock Bajo</span>
-                <span class="stat-value" id="stat-stock-bajo" style="color: var(--danger);">—</span>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <span class="stat-label">Stock Crítico</span>
+                        <strong class="stat-value" id="stat-stock-bajo" style="color: var(--danger)">0</strong>
+                    </div>
+                    <span class="material-symbols-outlined" style="color: var(--danger); background: #fee2e2; padding: 10px; border-radius: 12px;">warning</span>
+                </div>
             </div>
             <div class="stat-card">
-                <span class="stat-label">Valor del Inventario</span>
-                <span class="stat-value" id="stat-valor">—</span>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <span class="stat-label">Valor del Inventario</span>
+                        <strong class="stat-value" id="stat-valor" style="color: var(--primary)">$0.00</strong>
+                    </div>
+                    <span class="material-symbols-outlined" style="color: var(--primary); background: var(--primary-light); padding: 10px; border-radius: 12px;">account_balance_wallet</span>
+                </div>
             </div>
             <div class="stat-card">
-                <span class="stat-label">Artículos Activos</span>
-                <span class="stat-value" id="stat-activos">—</span>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <span class="stat-label">Artículos Activos</span>
+                        <strong class="stat-value" id="stat-activos" style="color: var(--success)">0</strong>
+                    </div>
+                    <span class="material-symbols-outlined" style="color: var(--success); background: #dcfce7; padding: 10px; border-radius: 12px;">inventory_2</span>
+                </div>
             </div>
         </section>
 
-        <section class="inventory-card">
+        <section class="inventory-card" style="position: relative;">
+            <div id="loading-overlay">
+                <div class="spinner"></div>
+            </div>
             <div class="table-tabs">
                 <div class="tab active" onclick="filtrarTab(this, 'Todos')">Todos</div>
                 <div class="tab" onclick="filtrarTab(this, 'Medicamento')">Medicamentos</div>
                 <div class="tab" onclick="filtrarTab(this, 'Vacuna')">Vacunas</div>
                 <div class="tab" onclick="filtrarTab(this, 'Accesorio')">Accesorios</div>
                 <div class="tab" onclick="filtrarTab(this, 'Alimento')">Alimentos</div>
+                <div class="tab" onclick="filtrarTab(this, 'Higiene')">Higiene</div>
             </div>
 
             <table id="tabla-inventario-dt" class="display responsive nowrap" style="width:100%">
@@ -623,6 +728,7 @@
                             <option value="Vacuna">Vacuna</option>
                             <option value="Accesorio">Accesorio</option>
                             <option value="Alimento">Alimento</option>
+                            <option value="Higiene">Higiene</option>
                         </select>
                     </div>
                 </div>
@@ -669,7 +775,7 @@
             fetch('inventario_post.php?accion=estadisticas')
                 .then(r => r.json())
                 .then(data => {
-                    document.getElementById('stat-stock-bajo').textContent = data.stock_bajo + ' Items';
+                    document.getElementById('stat-stock-bajo').textContent = data.stock_bajo;
                     document.getElementById('stat-valor').textContent = '$' + parseFloat(data.valor_total).toLocaleString('en-US', { minimumFractionDigits: 2 });
                     document.getElementById('stat-activos').textContent = data.productos_activos;
                 })
@@ -685,6 +791,9 @@
 
         function cargarProductos(tipo) {
             filtroActual = tipo || 'Todos';
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.display = 'flex';
+
             const url = tipo && tipo !== 'Todos'
                 ? 'inventario_post.php?accion=listar&tipo=' + encodeURIComponent(tipo)
                 : 'inventario_post.php?accion=listar';
@@ -693,36 +802,99 @@
                 .then(r => r.json())
                 .then(productos => {
                     const tbody = document.getElementById('tabla-inventario');
+                    overlay.style.display = 'none';
 
                     if (productos.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" class="empty-table">No hay productos registrados.</td></tr>';
+                        tbody.innerHTML = `<tr><td colspan="6" class="empty-table">
+                            <span class="material-symbols-outlined">inventory</span>
+                            No hay productos en la categoría <strong>${filtroActual}</strong>.
+                        </td></tr>`;
                         document.getElementById('pagination-info').textContent = '0 productos';
                         return;
                     }
 
                     tbody.innerHTML = productos.map(p => {
                         const porcentaje = Math.min((p.stock_actual / Math.max(p.stock_minimo * 4, 1)) * 100, 100);
-                        const color = p.stock_actual <= p.stock_minimo ? 'var(--danger)' : p.stock_actual <= p.stock_minimo * 2 ? 'var(--warning)' : 'var(--success)';
-                        const badgeClass = { 'Medicamento': 'badge-med', 'Vacuna': 'badge-vac', 'Accesorio': 'badge-acc', 'Alimento': 'badge-ali' }[p.tipo] || 'badge-med';
-                        const venc = p.fecha_vencimiento ? new Date(p.fecha_vencimiento).toLocaleDateString('es-VE') : '—';
+                        let stockColor = 'var(--success)';
+                        let stockLabel = 'Stock Saludable';
+                        let stockIcon = 'check_circle';
 
-                        return `<tr>
+                        if (p.stock_actual < p.stock_minimo) {
+                            stockColor = 'var(--danger)';
+                            stockLabel = 'Stock Crítico'; // Solo si es menor al mínimo
+                            stockIcon = 'error';
+                        } else if (p.stock_actual <= p.stock_minimo) {
+                            stockColor = 'var(--warning)';
+                            stockLabel = 'Stock en Límite'; // Igual al mínimo
+                            stockIcon = 'notification_important';
+                        } else if (p.stock_actual <= p.stock_minimo * 1.5) {
+                            stockColor = 'var(--warning)';
+                            stockLabel = 'Stock Bajo';
+                            stockIcon = 'warning';
+                        }
+
+                        const badgeData = {
+                            'Medicamento': { class: 'badge-med', icon: 'medication' },
+                            'Vacuna': { class: 'badge-vac', icon: 'vaccines' },
+                            'Accesorio': { class: 'badge-acc', icon: 'shopping_bag' },
+                            'Alimento': { class: 'badge-ali', icon: 'pet_supplies' },
+                            'Higiene': { class: 'badge-acc', icon: 'sanitizer' }
+                        }[p.tipo] || { class: 'badge-med', icon: 'inventory' };
+
+                        const vencDate = p.fecha_vencimiento ? new Date(p.fecha_vencimiento) : null;
+                        const today = new Date();
+                        const diffDays = vencDate ? Math.ceil((vencDate - today) / (1000 * 60 * 60 * 24)) : null;
+                        
+                        let vencHtml = '—';
+                        if (vencDate) {
+                            const dateStr = vencDate.toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' });
+                            if (diffDays < 0) {
+                                vencHtml = `<div class="vencimiento-alerta"><span class="material-symbols-outlined" style="font-size:14px;">event_busy</span> Vencido (${dateStr})</div>`;
+                            } else if (diffDays <= 30) {
+                                vencHtml = `<div class="vencimiento-alerta" style="color:var(--warning)"><span class="material-symbols-outlined" style="font-size:14px;">history</span> Próximo (${dateStr})</div>`;
+                            } else {
+                                vencHtml = dateStr;
+                            }
+                        }
+
+                        return `<tr class="inventory-row">
                             <td>
-                                <strong>${p.nombre_producto}</strong><br>
-                                <small style="color:var(--text-muted)">${p.codigo_barras || 'Sin código'}</small>
-                            </td>
-                            <td><span class="badge ${badgeClass}">${p.tipo}</span></td>
-                            <td>$${parseFloat(p.precio_venta).toFixed(2)}</td>
-                            <td>
-                                <strong>${p.stock_actual}</strong> / ${p.stock_minimo} mín
-                                <div class="stock-bar-container">
-                                    <div class="stock-bar" style="width:${porcentaje}%; background:${color}"></div>
+                                <div style="display:flex; align-items:center;">
+                                    <div class="prod-icon" style="background:${badgeData.class === 'badge-med' ? '#e0f2fe' : badgeData.class === 'badge-vac' ? '#dcfce7' : badgeData.class === 'badge-acc' ? '#f3e8ff' : badgeData.class === 'badge-ali' ? '#fef3c7' : '#f1f5f9'}; color:${badgeData.class === 'badge-med' ? '#0369a1' : badgeData.class === 'badge-vac' ? '#166534' : badgeData.class === 'badge-acc' ? '#6b21a8' : badgeData.class === 'badge-ali' ? '#92400e' : '#64748b'};">
+                                        <span class="material-symbols-outlined">${badgeData.icon}</span>
+                                    </div>
+                                    <div>
+                                        <strong style="color:var(--text-main); font-size:0.95rem;">${p.nombre_producto}</strong><br>
+                                        <small style="color:var(--text-muted); display:flex; align-items:center; gap:4px;">
+                                            <span class="material-symbols-outlined" style="font-size:12px;">barcode</span> ${p.codigo_barras || 'Sin código'}
+                                        </small>
+                                    </div>
                                 </div>
                             </td>
-                            <td>${venc}</td>
+                            <td><span class="badge ${badgeData.class}" style="display:inline-flex; align-items:center; gap:4px;"><span class="material-symbols-outlined" style="font-size:14px;">${badgeData.icon}</span> ${p.tipo}</span></td>
+                            <td><strong style="color:var(--text-main);">$${parseFloat(p.precio_venta).toFixed(2)}</strong></td>
                             <td>
-                                <button class="action-btn" onclick="editarProducto(${p.id_producto}, '${p.codigo_barras || ''}', '${p.nombre_producto.replace(/'/g, "\\'")}', '${p.tipo}', ${p.precio_venta}, ${p.stock_actual}, ${p.stock_minimo}, '${p.fecha_vencimiento || ''}')">Editar</button>
-                                <button class="action-btn danger" onclick="eliminarProducto(${p.id_producto})">Eliminar</button>
+                                <div style="display:flex; flex-direction:column;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                        <strong style="font-size:0.9rem;">${p.stock_actual} uds</strong>
+                                        <small style="color:var(--text-muted)">mín: ${p.stock_minimo}</small>
+                                    </div>
+                                    <div class="stock-bar-container" style="width:100%; height:8px;">
+                                        <div class="stock-bar" style="width:${porcentaje}%; background:${stockColor}"></div>
+                                    </div>
+                                    <div class="stock-status-pill" style="color:${stockColor}">
+                                        <span class="material-symbols-outlined" style="font-size:12px;">${stockIcon}</span> ${stockLabel}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${vencHtml}</td>
+                            <td style="text-align:center;">
+                                <button class="action-btn" onclick="editarProducto(${p.id_producto}, '${p.codigo_barras || ''}', '${p.nombre_producto.replace(/'/g, "\\'")}', '${p.tipo}', ${p.precio_venta}, ${p.stock_actual}, ${p.stock_minimo}, '${p.fecha_vencimiento || ''}')" title="Editar">
+                                    <span class="material-symbols-outlined" style="font-size:18px;">edit</span>
+                                </button>
+                                <button class="action-btn danger" onclick="eliminarProducto(${p.id_producto})" title="Eliminar">
+                                    <span class="material-symbols-outlined" style="font-size:18px;">delete</span>
+                                </button>
                             </td>
                         </tr>`;
                     }).join('');
@@ -737,13 +909,15 @@
                         responsive: true,
                         language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' },
                         paging: true,
+                        pageLength: 10,
                         info: true,
                         searching: true,
                         destroy: true
                     });
                 })
                 .catch(() => {
-                    document.getElementById('tabla-inventario').innerHTML = '<tr><td colspan="6" class="empty-table">Error al cargar productos. Verifique la conexión.</td></tr>';
+                    overlay.style.display = 'none';
+                    document.getElementById('tabla-inventario').innerHTML = '<tr><td colspan="6" class="empty-table">Error al conectar.</td></tr>';
                 });
         }
 
@@ -852,6 +1026,18 @@
                 if (!modal.contains(e.target) && !logo.contains(e.target) && !avatar.contains(e.target)) {
                     modal.style.display = 'none';
                 }
+            }
+        });
+
+        // ===== Validación de Formulario =====
+        document.getElementById('formProducto').addEventListener('submit', function(e) {
+            const precio = parseFloat(document.getElementById('inp-precio').value);
+            const stock = parseInt(document.getElementById('inp-stock').value);
+            const stockMin = parseInt(document.getElementById('inp-stock-min').value);
+
+            if (precio < 0 || stock < 0 || stockMin < 0) {
+                e.preventDefault();
+                mostrarToast('❌ Los valores numéricos no pueden ser negativos');
             }
         });
 
